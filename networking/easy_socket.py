@@ -34,37 +34,3 @@ class EasySocket:
         ret = self.prefix[0:ind]
         self.prefix = self.prefix[ind + 1:]
         return ret
-
-
-"""
-def threaded_function(serve):
-    sock = None
-    if serve:
-        sock = EasySocket(sock=None, isServer=True)
-        sock.connect(host="localhost", port=8080)
-    else:
-        sock = EasySocket(sock=None, isServer=False)
-        sock.connect(host="localhost", port=8080)
-
-    sleep(1)
-    if serve:
-        sock.send(b"server&")
-    else:
-        sock.send(b"client&")
-
-    str = sock.receive_until(b'&')
-
-    if serve:
-        print(b"Server received: " + str)
-    else:
-        print(b"Client received: " + str)
-
-if __name__ == "__main__":
-    sThread = Thread(target=threaded_function, args=(True, ))
-    cThread = Thread(target=threaded_function, args=(False, ))
-    sThread.start()
-    cThread.start()
-    sThread.join()
-    cThread.join()
-    print("thread finished...exiting")
-"""
