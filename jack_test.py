@@ -8,6 +8,7 @@ from graphics.init import init_window
 import graphics.sprite
 import graphics.render
 import sys
+import socket
 from gameplay.entity import Player
 
 
@@ -43,11 +44,11 @@ def main():
     if iAmServer:
         print("Server")
         connection = MessageQueueHolder(True)
-        connection.start_connect("localhost", 8080)
+        connection.start_connect(socket.gethostbyname(socket.gethostname()), 25565)
     else:
         print("Client")
         connection = MessageQueueHolder(False)
-        connection.start_connect("192.168.201.185", 8080)
+        connection.start_connect("192.168.201.185", 25565)
 
     print("Connecting")
     while not connection.connected:
