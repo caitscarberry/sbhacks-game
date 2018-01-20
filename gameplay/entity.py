@@ -1,5 +1,7 @@
 class Entity:
-    def __init__(self):
-        pass
+    def __init__(self, sprite):
+        self.sprite = sprite
 
+
+    
     
