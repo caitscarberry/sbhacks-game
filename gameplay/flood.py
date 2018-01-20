@@ -35,6 +35,6 @@ def connected(board):
 
     for i in range(size):
         for j in range(size):
-            if(visit[i][j] != board[i][j]):
+            if visit[i][j] != board[i][j]:
                 return False
     return True
