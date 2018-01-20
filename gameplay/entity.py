@@ -1,5 +1,6 @@
 import sdl2
 from gameplay import physics
+from gameplay.physics import Vec2, Polygon
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
 from graphics.rect import Rect
@@ -8,26 +9,25 @@ import graphics.render
 
 
 class Entity:
-    def __init__(self, pos=physics.Vec2(), sprite=None):
-        self.pos = pos
+    def __init__(self, collider: physics.PhysObject, sprite=None):
+        self.collider = collider
         self.sprite = sprite
      
     def processInputEvent(self):
         pass
     
     def update(self):
-        self.x += self.velocity_x
-        self.y += self.velocity_y
+        pass
 
     #directions in sprite sheet order
     #front right back left
     #  0     1     2    3
     def directionFromVelocity(self):
-        if (self.velocity_x > 0):
+        if (self.collider.vel.x > 0):
             return 1
-        if (self.velocity_x < 0):
+        if (self.collider.vel.x < 0):
             return 3
-        if (self.velocity_y < 0):
+        if (self.collider.vel.y < 0):
             return 2
         return 0
 
@@ -37,16 +37,13 @@ class Entity:
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
-        self.velocity_x = 0
-        self.velocity_y = 0
-        self.x = x
-        self.y = y
+        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93))
+        self.width = 66
+        self.height = 93
         self.speed = 1
         self.id = player_id
         self.next_bullet_id = 0
         self.sprite = None
-        self.width = 66
-        self.height = 93
 
     def load_sprite(self, spritefac):
         self.sprites = []
@@ -60,8 +57,7 @@ class Player(Entity):
         game_event_dict = {
             "type": "PLAYER",
             "player_id": self.id,
-            "x": self.x,
-            "y": self.y,
+            "pos": self.collider.pos.to_dict()
         }
 
         if event.type == sdl2.SDL_KEYDOWN or event.type == sdl2.SDL_KEYUP:
@@ -70,8 +66,7 @@ class Player(Entity):
             velocity_y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
 
             game_event_dict["code"] = "CHANGE_VELOCITY"
-            game_event_dict["velocity_x"] = velocity_x
-            game_event_dict["velocity_y"] = velocity_y
+            game_event_dict["velocity"] = self.collider.vel.to_dict()
 
             return GameEvent(game_event_dict)
 
@@ -81,11 +76,10 @@ class Player(Entity):
     def processPlayerEvent(self, event):
         if (event.params["player_id"] != self.id):
             return
-        self.x = int(event.params["x"])
-        self.y = int(event.params["y"])
+        self.collider.pos.from_dict(event.params["pos"])
+        
         if (event.params["code"] == "CHANGE_VELOCITY"):
-            self.velocity_x = int(event.params["velocity_x"])
-            self.velocity_y = int(event.params["velocity_y"])
+            self.collider.vel.from_dict(event.params["velocity"])
         elif (event.params["code"] == "SHOOT"):
             #each client is responsible for sending updates about its
             #player's bullets (and ONLY its player's bullets)
@@ -104,15 +98,11 @@ class Player(Entity):
     def render(self, renderer):
         if (self.sprite == None):
             return
-        renderer.draw_sprite(self.sprites[self.directionFromVelocity()], int(self.x), int(self.y))
+        renderer.draw_sprite(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x), int(self.collider.pos.x))
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction, player_id):
         self.id = bullet_id
-        self.x = x
-        self.y = y
         self.speed = 5
-        self.x_velocity = self.speed * math.cos(direction)
-        self.y_velocity = self.speed * math.sin(direction)
         #the player that fired this bullet
         self.player_id = player_id
