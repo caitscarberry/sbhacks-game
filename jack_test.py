@@ -33,38 +33,53 @@ class ControlsState:
 
 
 def main():
+    if len(sys.argv) < 3:
+        print("Please provide player file name and player id")
+        sys.exit(1)
+
+    player_file = open(sys.argv[1], "r")
+    my_player_id = int(sys.argv[2])
+    players_str = player_file.read()
+
+    player_adds = players_str.split()
+    num_players = len(player_adds)
+    connections = [None] * num_players
+
+    for p in range(num_players):
+        if p == my_player_id:
+            continue
+        connection = None
+        me = input()
+        iAmServer = p > my_player_id
+        if iAmServer:
+            print("Server")
+            connection = MessageQueueHolder(True)
+            connection.start_connect(player_adds[my_player_id], 25565)
+        else:
+            print("Client")
+            connection = MessageQueueHolder(False)
+            connection.start_connect(player_adds[p], 25565)
+
+        connections[p] = connection
+
+    for p in range(num_players):
+        if p == my_player_id:
+            continue
+        connection = connections[p]
+        print("Connecting to host " + str(p) + " (" + player_adds[p] + ")")
+        while not connection.connected:
+            SDL_Delay(100)
+
+        print("Connecting to host " + str(p))
+        connection.start_update()
+
+    print("Finished")
+    sys.exit(0)
+
     window = init_window()
     running = True
     render = sdl2.ext.sprite.Renderer(window)
     my_render = graphics.render.Renderer(render)
-
-    connection = None
-    me = input()
-    iAmServer = me.startswith("s")
-    if iAmServer:
-        print("Server")
-        connection = MessageQueueHolder(True)
-        connection.start_connect(socket.gethostbyname(socket.gethostname()), 25565)
-    else:
-        print("Client")
-        connection = MessageQueueHolder(False)
-        connection.start_connect("192.168.201.185", 25565)
-
-    print("Connecting")
-    while not connection.connected:
-        SDL_Delay(100)
-
-    print("Connected")
-    connection.start_update()
-
-    if iAmServer:
-        connection.send(b'test123')
-    else:
-        while connection.queue.qsize() == 0:
-            SDL_Delay(100)
-        print(b"Message: " + connection.queue.get())
-
-    sys.exit(0)
 
     col = Color(123, 123, 123)
     playersprite = graphics.sprite.Sprite.from_file("./assets/players.png")
