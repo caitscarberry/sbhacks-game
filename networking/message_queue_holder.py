@@ -7,8 +7,12 @@ class MessageQueueHolder:
         self.queue = Queue()
         self.socket = EasySocket(isServer)
         self.connected = False
+        self.host = None
+        self.port = None
 
     def _connect(self, host, port):
+        self.host = host
+        self.port = port
         self.socket.connect(host, port)
         self.connected = True
 

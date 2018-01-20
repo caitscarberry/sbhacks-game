@@ -49,24 +49,22 @@ def main():
         if p == my_player_id:
             continue
         connection = None
-        me = input()
         iAmServer = p > my_player_id
         if iAmServer:
-            print("Server")
             connection = MessageQueueHolder(True)
-            connection.start_connect(player_adds[my_player_id], 25565)
+            connection.start_connect(player_adds[my_player_id], 25565 + p)
         else:
-            print("Client")
             connection = MessageQueueHolder(False)
-            connection.start_connect(player_adds[p], 25565)
+            connection.start_connect(player_adds[p], 25565 + my_player_id)
 
         connections[p] = connection
+        print("Started connection to host " + str(p))
 
     for p in range(num_players):
         if p == my_player_id:
             continue
         connection = connections[p]
-        print("Connecting to host " + str(p) + " (" + player_adds[p] + ")")
+        print("Connecting to host " + str(p) + " (" + connection.host + ":" + str(connection.port) + ")")
         while not connection.connected:
             SDL_Delay(100)
 

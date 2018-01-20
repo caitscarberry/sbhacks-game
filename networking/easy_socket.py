@@ -17,7 +17,14 @@ class EasySocket:
             self.sock.listen(1)
             self.sock, self.addr = self.sock.accept()
         else:
-            self.sock.connect((host, port))
+            connected = False
+            while not connected:
+                try:
+                    self.sock.connect((host, port))
+                    connected = True
+                except Exception:
+                    print("Connection to " + host + " failed, retrying")
+
 
     def send(self, msg):
         self.sock.sendall(msg)
