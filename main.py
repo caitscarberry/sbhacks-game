@@ -19,12 +19,17 @@ def main():
         events = sdl2.ext.get_events()
         render.clear(col)
         my_render.draw_sprite(playersprite, player.x, player.y)
-        print(player.x, player.y)
+        player_events = []
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
-            render.present()
+            else:
+                player_events.append(player.processInputEvt(event))
+        for event in player_events:
+            player.processPlayerEvt(event)
+        player.update()
+        render.present()
         window.refresh()
         sdl2.SDL_Delay(16)
 
