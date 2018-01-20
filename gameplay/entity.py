@@ -45,6 +45,8 @@ class Player(Entity):
         self.id = player_id
         self.next_bullet_id = 0
         self.sprite = None
+        self.width = 66
+        self.height = 93
 
     def load_sprite(self, spritefac):
         self.sprites = []
