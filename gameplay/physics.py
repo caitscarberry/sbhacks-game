@@ -9,9 +9,9 @@ class Vec2:
         self.x = x
         self.y = y
 
-
+    
     def length(self):
-        return sqrt(self.x * self.x + self.y + self.y)
+        return sqrt(self.x * self.x + self.y * self.y)
 
     def squarelength(self):
         return self.x * self.x + self.y * self.y
@@ -66,6 +66,13 @@ class Vec2:
     def __neg__(self):
         return Vec2(-self.x, -self.y)
 
+    def to_dict(self):
+        return {"x": self.x, "y": self.y}
+
+    def from_dict(self, dictionary):
+        self.x = dictionary["x"]
+        self.y = dictionary["y"]
+
     
 class AABB:
     __slots__ = ["x1", "y1", "x2", "y2"]
@@ -93,7 +100,6 @@ class AABB:
         return AABB(x1, y1, x2 - x1, y2 - y1)
     
 
-
 class LineSegment:
     __slots__ = ["start", "stop"]
     
@@ -101,7 +107,7 @@ class LineSegment:
         self.start = min(start, stop)
         self.stop = max(start, stop)
 
-    def overlap(self, other: LineSegment) -> float:
+    def overlap(self, other) -> float:
         return max(0.0, min(self.stop, other.stop) - max(self.start, other.start))
 
     def __repr__(self):
@@ -137,8 +143,8 @@ class Polygon:
         return LineSegment(low, high)
         
     
-    @classmethod
-    def square(self, x, y, w, h):
+    @staticmethod
+    def square(x, y, w, h):
         axes = [Vec2(x, y), Vec2(x + w, y), Vec2(x + w, y + h), Vec2(x, y + h)]
         return Polygon(axes)
         
@@ -159,11 +165,11 @@ class PhysObject:
 class Simulation:
     def __init__(self):
         self.objects = set()
+        
 
-
-    def detect_collisions(self):
-        pass
-                
+    def add_object(self, obj):
+        self.objects.add(obj)
+        
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
         collisions = []
@@ -208,6 +214,3 @@ class Simulation:
                 bestaxis = axis
 
         return axis.normalize() * overlap
-
-
-        
