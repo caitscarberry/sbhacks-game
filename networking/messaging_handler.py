@@ -44,3 +44,8 @@ class MessagingHandler:
             while not connection.queue.empty():
                 ret.put(connection.queue.get())
         return ret
+
+    def broadcast(self, msg):
+        for connection in self.connections:
+            if connection is not None:
+                connection.send(msg)
