@@ -16,4 +16,5 @@ def main():
                 running = False
                 break
         window.refresh()
-    
+
+main()
