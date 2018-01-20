@@ -1,6 +1,7 @@
 import sdl2
 import sdl2.ext
 import ctypes
+from graphics.render import SpriteRenderer
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -12,6 +13,13 @@ def initWindow():
     window = sdl2.ext.Window("Hackathon", WINDOW_SIZE)
     window.show()
     return window
+
+def initRenderers():
+	global raw_renderer
+	raw_renderer = sdl2.ext.sprite.Renderer(window)
+	global sprite_renderer
+	sprite_renderer = SpriteRenderer(raw_renderer)
+
 
 
 class SubView():
@@ -32,3 +40,4 @@ class MenuView(SubView):
 
 def initView():
 	initWindow()
+	initRenderers()

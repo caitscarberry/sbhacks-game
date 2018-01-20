@@ -4,7 +4,6 @@ import sdl2
 import sdl2.ext
 import sdl2.ext.sprite
 from sdl2.ext.color import Color
-from graphics.init import init_window
 import graphics.sprite
 import graphics.render
 import sys
@@ -40,13 +39,12 @@ def main():
     graphics.view.initView()
 
     running = True
-    print(graphics.view.window)
-    render = sdl2.ext.sprite.Renderer(graphics.view.window)
-    my_render = graphics.render.Renderer(render)
+
+    graphics.view.sprite_renderer = graphics.render.SpriteRenderer(graphics.view.raw_renderer)
 
     col = Color(123, 123, 123)
 
-    spritefac = graphics.sprite.SpriteFactory(render)
+    spritefac = graphics.sprite.SpriteFactory(graphics.view.raw_renderer)
 
     playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
 
@@ -86,10 +84,10 @@ def main():
         for player in players:
             player.update()
 
-        render.clear(col)
+        graphics.view.raw_renderer.clear(col)
         for player in players:
-            player.render(my_render)
-        render.present()
+            player.render(graphics.view.sprite_renderer)
+        graphics.view.raw_renderer.present()
         graphics.view.window.refresh()
         sdl2.SDL_Delay(16)
 
