@@ -75,13 +75,10 @@ def main():
                     if connection is None:
                         continue
                     connection.send(player_event.serialize().encode("utf-8"))
-
-        for connection in connections:
-            if connection is None:
-                continue
-            while connection.queue.qsize() > 0:
-                msg = connection.queue.get()
-                game_events.append(GameEvent.deserialize(msg.decode("utf-8")))
+        messages = messaging.get_messages()
+        while messages.qsize() > 0:
+            msg = messages.get()
+            game_events.append(GameEvent.deserialize(msg.decode("utf-8")))
 
         for event in game_events:
             if (event.params["type"] == "PLAYER"):
