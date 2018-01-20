@@ -47,6 +47,12 @@ class Player(Entity):
         self.sprite = None
         self.width = 66
         self.height = 93
+        self.roomX = -1
+        self.roomY = -1
+
+    def setRoom(self, x, y):
+        self.roomX = x
+        self.roomY = y
 
     def load_sprite(self, spritefac):
         self.sprites = []
