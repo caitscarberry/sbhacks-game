@@ -40,20 +40,14 @@ def main():
 
     running = True
 
-    graphics.view.sprite_renderer = graphics.render.SpriteRenderer(graphics.view.raw_renderer)
-
     col = Color(123, 123, 123)
-
-    spritefac = graphics.sprite.SpriteFactory(graphics.view.raw_renderer)
-
-    playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
 
     players = []
     for i in range(num_players):
         players.append(Player(i, 50*i, 50))
 
     for player in players:
-        player.load_sprite(spritefac)
+        player.load_sprite(graphics.view.sprite_factory)
 
     while running == True:
         input_events = sdl2.ext.get_events()
