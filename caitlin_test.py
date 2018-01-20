@@ -13,6 +13,8 @@ from graphics.rect import Rect
 from gameplay.entity import Player
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
+import platform
+import os
 
 def main():
     window = init_window()
@@ -50,6 +52,9 @@ def main():
     spritefac = graphics.sprite.SpriteFactory(render)
     playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
 
+    for player in players:
+        player.load_sprite(spritefac)
+
     while running == True:
         input_events = sdl2.ext.get_events()
 
@@ -81,7 +86,7 @@ def main():
 
         render.clear(col)
         for player in players:
-            my_render.draw_sprite(playersprite, int(player.x), int(player.y))
+            player.render(my_render)
         render.present()
         window.refresh()
         sdl2.SDL_Delay(16)

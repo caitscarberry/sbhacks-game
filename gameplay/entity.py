@@ -2,10 +2,15 @@ import sdl2
 from gameplay import physics
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
+from graphics.rect import Rect
+import graphics.sprite
+import graphics.render
+
 
 class Entity:
-    def __init__(self, pos=physics.Vec2()):
+    def __init__(self, pos=physics.Vec2(), sprite=None):
         self.pos = pos
+        self.sprite = sprite
      
     def processInputEvent(self):
         pass
@@ -13,6 +18,21 @@ class Entity:
     def update(self):
         self.x += self.velocity_x
         self.y += self.velocity_y
+
+    #directions in sprite sheet order
+    #front right back left
+    #  0     1     2    3
+    def directionFromVelocity(self):
+        if (self.velocity_x > 0):
+            return 1
+        if (self.velocity_x < 0):
+            return 3
+        if (self.velocity_y < 0):
+            return 2
+        return 0
+
+    def render(self, renderer):
+        pass
 
 
 class Player(Entity):
@@ -24,6 +44,13 @@ class Player(Entity):
         self.speed = 1
         self.id = player_id
         self.next_bullet_id = 0
+        self.sprite = None
+
+    def load_sprite(self, spritefac):
+        self.sprites = []
+        for i in range(0,4):
+            self.sprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100*i, 115*self.id, 66, 93))
+            self.sprites.append(self.sprite)
 
     def processInputEvent(self, event: sdl2.SDL_Event):
         #We'll want to return a GameEvent, and these fields
@@ -72,6 +99,10 @@ class Player(Entity):
         bullet = Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
         self.next_bullet_id += 1
 
+    def render(self, renderer):
+        if (self.sprite == None):
+            return
+        renderer.draw_sprite(self.sprites[self.directionFromVelocity()], int(self.x), int(self.y))
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction, player_id):
