@@ -9,11 +9,12 @@ class Entity:
         pass
     
     def update(self):
-        pass
+        self.x += self.velocity_x
+        self.y += self.velocity_y
     
 
 class PlayerEvt:
-    def __init__(player_id, x, y, evt_type):
+    def __init__(self, player_id, x, y, evt_type):
         self.player_id = player_id
         self.x = x
         self.y = y
@@ -46,14 +47,16 @@ class Player(Entity):
             if event.key.keysym.sym in (sdl2.SDLK_RIGHT, sdl2.SDLK_LEFT):
                 return PlayerEvt(self.id, self.x, self.y, "STOP_MOVING_X")
 
+        return PlayerEvt(self.id, self.x, self.y, "NONE")
+
     def processPlayerEvt(self, evt):
-        if (evt.player_id != this.id):
+        if (evt.player_id != self.id):
             return
         self.x = evt.x
         self.y = evt.y
         if (evt.type == "START_MOVING_LEFT"):
-            self.velocity_x = self.speed
-        if (evt.type == "START_MOVING_RGHT"):
+            self.velocity_x = -self.speed
+        if (evt.type == "START_MOVING_RIGHT"):
             self.velocity_x = self.speed
         if (evt.type == "START_MOVING_UP"):
             self.velocity_y = -self.speed
@@ -80,7 +83,7 @@ class Player(Entity):
 
 
 class Bullet(Entity):
-    def __init__ (bullet_id, x, y, direction, player_id):
+    def __init__ (self, bullet_id, x, y, direction, player_id):
         self.id = bullet_id
         self.x = x
         self.y = y
