@@ -41,11 +41,13 @@ def main():
     me = input()
     iAmServer = me.startswith("s")
     if iAmServer:
+        print("Server")
         connection = MessageQueueHolder(True)
         connection.start_connect("localhost", 8080)
     else:
+        print("Client")
         connection = MessageQueueHolder(False)
-        connection.start_connect("169.231.166.81", 8080)
+        connection.start_connect("192.168.201.185", 8080)
 
     print("Connecting")
     while not connection.connected:
