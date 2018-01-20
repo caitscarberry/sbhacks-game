@@ -5,6 +5,7 @@ from sdl2.ext.color import Color
 from graphics.init import init_window
 import graphics.sprite
 import graphics.render
+from graphics.rect import Rect
 from gameplay.entity import Player
 
 class ControlsState:
@@ -31,7 +32,8 @@ def main():
     render = sdl2.ext.sprite.Renderer(window)
     my_render = graphics.render.Renderer(render)
     col = Color(123, 123, 123)
-    playersprite = graphics.sprite.Sprite.from_file("./assets/players.png")
+    spritefac = graphics.sprite.SpriteFactory(render)
+    playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
     player = Player(0, 0, 0)
     controls_state = ControlsState()
     while running == True:

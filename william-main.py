@@ -5,6 +5,7 @@ from sdl2.ext.color import Color
 from graphics.init import init_window
 import graphics.sprite
 import graphics.render
+import graphics.rect
 from gameplay.entity import Player
 
 def main():
@@ -14,7 +15,7 @@ def main():
     my_render = graphics.render.Renderer(render)
     col = Color(123, 123, 123)
     spritefac = graphics.sprite.SpriteFactory(render)
-    playersprite = spritefac.from_file("./assets/players.png")
+    playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
     player = Player(0, 0, 0)
     
     while running == True:
@@ -39,7 +40,7 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except sdl2.SDLError:
+    except sdl2.ext.SDLError:
         pass
     except RuntimeError as e:
         print(e)

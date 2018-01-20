@@ -2,11 +2,21 @@ import sdl2
 import sdl2.ext
 import ctypes
 
+from graphics.rect import Rect
+
 class Sprite:
-    def __init__(self, texture: sdl2.SDL_Texture, width=0, height=0):
+    def __init__(self, texture: sdl2.SDL_Texture, rect):
         self.texture = texture
-        self.width = width
-        self.height = height
+        self.rect = rect
+
+    def subsprite(self, subrect:Rect):
+        if not self.rect.contains(subrect):
+            raise ValueError("Subsprite must be within sprite bounds")
+
+        subrect.x += self.rect.x
+        subrect.y += self.rect.y
+        return Sprite(self.texture, subrect)
+            
 
 
 # I HATE IT
@@ -23,4 +33,5 @@ class SpriteFactory:
         surface = sdl2.ext.load_image(filename)
         w, h = surface.w, surface.h
         texture = self.extract_texture(surface)
-        return Sprite(texture, w, h)
+        rect = Rect(0, 0, w, h)
+        return Sprite(texture, rect)
