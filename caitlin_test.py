@@ -11,32 +11,8 @@ import sys
 import socket
 from graphics.rect import Rect
 from gameplay.entity import Player
-from gameplay.events import PlayerEvent, GameEvent
-
-
-class ControlsState:
-    def __init__(self):
-        self.state = {sdl2.SDLK_UP: False, sdl2.SDLK_DOWN: False, sdl2.SDLK_RIGHT: False, sdl2.SDLK_LEFT: False}
-        self.arrow_keys = [sdl2.SDLK_UP, sdl2.SDLK_DOWN, sdl2.SDLK_RIGHT, sdl2.SDLK_LEFT]
-
-    def should_process_input_event(self, event):
-        if (event.type != sdl2.SDL_KEYDOWN and event.type != sdl2.SDL_KEYUP):
-            return True
-        if (not event.key.keysym.sym in self.arrow_keys):
-            return False
-        if ((event.type == sdl2.SDL_KEYDOWN) and (not self.state[event.key.keysym.sym])):
-            return True
-        if (event.type == sdl2.SDL_KEYUP):
-            return True
-
-    def update_state(self, event):
-        if (event.type == sdl2.SDL_KEYDOWN):
-            self.state[event.key.keysym.sym] = True
-        elif (event.type == sdl2.SDL_KEYUP):
-            #Reset control state when a key is released; avoids some bugs
-            for key in self.arrow_keys:
-                self.state[event.key.keysym.sym] = False
-
+from gameplay.events import GameEvent
+from gameplay.controls import ControlsState
 
 def main():
     window = init_window()
@@ -74,11 +50,8 @@ def main():
     spritefac = graphics.sprite.SpriteFactory(render)
     playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
 
-    controls_state = ControlsState()
     while running == True:
         input_events = sdl2.ext.get_events()
-        render.clear(col)
-        my_render.draw_sprite(playersprite, players[my_player_id].x, players[my_player_id].y)
 
         game_events = []
 
@@ -87,25 +60,28 @@ def main():
                 running = False
                 break
             else:
-                if not controls_state.should_process_input_event(event):
+                if not ControlsState.should_process_input_event(event):
                     continue
+                ControlsState.update_state(event)
                 player_event = players[my_player_id].processInputEvent(event)
-                if player_event.code == "NONE":
+                if player_event.params["code"] == "NONE":
                     continue
                 game_events.append(player_event)
-                connection.send(player_event.serialize())
-                controls_state.update_state(event)
+                connection.send(player_event.serialize().encode("utf-8"))
 
         while connection.queue.qsize() > 0:
             msg = connection.queue.get()
             game_events.append(GameEvent.deserialize(msg.decode("utf-8")))
 
         for event in game_events:
-            if (event.type == "player"):
-                players[event.player_id].processPlayerEvent(event)
+            if (event.params["type"] == "PLAYER"):
+                players[event.params["player_id"]].processPlayerEvent(event)
         for player in players:
             player.update()
-            print("%d: %d, %d" % (player.id, player.x, player.y))
+
+        render.clear(col)
+        for player in players:
+            my_render.draw_sprite(playersprite, int(player.x), int(player.y))
         render.present()
         window.refresh()
         sdl2.SDL_Delay(16)

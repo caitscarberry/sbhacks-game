@@ -1,6 +1,7 @@
 import sdl2
 from gameplay import physics
-from gameplay.events import PlayerEvent
+from gameplay.events import GameEvent
+from gameplay.controls import ControlsState
 
 class Entity:
     def __init__(self, pos=physics.Vec2()):
@@ -25,42 +26,38 @@ class Player(Entity):
         self.next_bullet_id = 0
 
     def processInputEvent(self, event: sdl2.SDL_Event):
-        if event.type == sdl2.SDL_KEYDOWN:
-            if event.key.keysym.sym == sdl2.SDLK_UP:
-                return PlayerEvent(self.id, self.x, self.y, "START_MOVING_UP")
-            elif event.key.keysym.sym == sdl2.SDLK_DOWN:
-                return PlayerEvent(self.id, self.x, self.y, "START_MOVING_DOWN")
-            elif event.key.keysym.sym == sdl2.SDLK_RIGHT:
-                return PlayerEvent(self.id, self.x, self.y, "START_MOVING_RIGHT")
-            elif event.key.keysym.sym == sdl2.SDLK_LEFT:
-                return PlayerEvent(self.id, self.x, self.y, "START_MOVING_LEFT")
+        #We'll want to return a GameEvent, and these fields
+        #are the same regardless of what the rest of the event is
+        game_event_dict = {
+            "type": "PLAYER",
+            "player_id": self.id,
+            "x": self.x,
+            "y": self.y,
+        }
 
-        elif event.type == sdl2.SDL_KEYUP:
-            if event.key.keysym.sym in (sdl2.SDLK_UP, sdl2.SDLK_DOWN):
-                return PlayerEvent(self.id, self.x, self.y, "STOP_MOVING_Y")
-            if event.key.keysym.sym in (sdl2.SDLK_RIGHT, sdl2.SDLK_LEFT):
-                return PlayerEvent(self.id, self.x, self.y, "STOP_MOVING_X")
+        if event.type == sdl2.SDL_KEYDOWN or event.type == sdl2.SDL_KEYUP:
+            state = ControlsState.state
+            velocity_x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
+            velocity_y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
 
-        return PlayerEvent(self.id, self.x, self.y, "NONE")
+            game_event_dict["code"] = "CHANGE_VELOCITY"
+            game_event_dict["velocity_x"] = velocity_x
+            game_event_dict["velocity_y"] = velocity_y
+
+            return GameEvent(game_event_dict)
+
+        game_event_dict["code"] = "NONE"
+        return GameEvent(game_event_dict)
 
     def processPlayerEvent(self, event):
-        if (event.player_id != self.id):
+        if (event.params["player_id"] != self.id):
             return
-        self.x = event.x
-        self.y = event.y
-        if (event.code == "START_MOVING_LEFT"):
-            self.velocity_x = -self.speed
-        if (event.code == "START_MOVING_RIGHT"):
-            self.velocity_x = self.speed
-        if (event.code == "START_MOVING_UP"):
-            self.velocity_y = -self.speed
-        if (event.code == "START_MOVING_DOWN"):
-            self.velocity_y = self.speed
-        if (event.code == "STOP_MOVING_Y"):
-            self.velocity_y = 0
-        if (event.code == "STOP_MOVING_X"):
-            self.velocity_x = 0
-        if (event.code == "SHOOT"):
+        self.x = int(event.params["x"])
+        self.y = int(event.params["y"])
+        if (event.params["code"] == "CHANGE_VELOCITY"):
+            self.velocity_x = int(event.params["velocity_x"])
+            self.velocity_y = int(event.params["velocity_y"])
+        elif (event.params["code"] == "SHOOT"):
             #each client is responsible for sending updates about its
             #player's bullets (and ONLY its player's bullets)
             #to the other clients every tick.
