@@ -1,3 +1,4 @@
+import sdl2
 from gameplay import physics
 
 class Entity:
@@ -28,7 +29,7 @@ class Player(Entity):
         self.id = player_id
         self.next_bullet_id = 0
 
-    def processInputEvt(self):
+    def processInputEvt(self, event: sdl2.SDL_Event):
         if event.type == sdl2.SDL_KEYDOWN:
             if event.key.keysym.sym == sdl2.SDLK_UP:
                 return PlayerEvt(self.id, self.x, self.y, "START_MOVING_UP")
@@ -74,8 +75,8 @@ class Player(Entity):
     def shoot(self, direction):
         #each bullet is identified by playerid_bulletnumber
         #this ensures that bullet ids are globally unique
-        bullet = new Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
-        self.next_bullet_id++
+        bullet = Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
+        self.next_bullet_id += 1
 
 
 class Bullet(Entity):

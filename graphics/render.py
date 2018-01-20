@@ -16,7 +16,7 @@ class Renderer:
         rect.x = x
         rect.y = y
         sdlrender = self.target.sdlrenderer
-        print(type(sdlrender))
+
         #TODO: Remove
         texture = sdl2.SDL_CreateTextureFromSurface(sdlrender.contents, texture)
         retcode = rcopy(sdlrender, texture, None, pointer(rect))
