@@ -71,10 +71,7 @@ def main():
                 if player_event.params["code"] == "NONE":
                     continue
                 game_events.append(player_event)
-                for connection in connections:
-                    if connection is None:
-                        continue
-                    connection.send(player_event.serialize().encode("utf-8"))
+                messaging.broadcast(player_event.serialize().encode("utf-8"))
         messages = messaging.get_messages()
         while messages.qsize() > 0:
             msg = messages.get()
