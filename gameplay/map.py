@@ -2,6 +2,7 @@ from gameplay.room import Room
 from queue import Queue
 import random
 
+
 def getBoard(boardSize, numEmptySquares):
     board = [[1]*boardSize for _ in range(boardSize)]
     boardWorks = False
