@@ -1,5 +1,4 @@
-from networking.message_queue_holder import MessageQueueHolder
-from sdl2 import SDL_Delay
+from networking.messaging_handler import MessagingHandler
 import sdl2
 import sdl2.ext
 import sdl2.ext.sprite
@@ -45,36 +44,9 @@ def main():
 
     player_adds = players_str.split()
     num_players = len(player_adds)
-    connections = [None] * num_players
 
-    for p in range(num_players):
-        if p == my_player_id:
-            continue
-        connection = None
-        iAmServer = p > my_player_id
-        if iAmServer:
-            connection = MessageQueueHolder(True)
-            connection.start_connect(player_adds[my_player_id], 25565 + p)
-        else:
-            connection = MessageQueueHolder(False)
-            connection.start_connect(player_adds[p], 25565 + my_player_id)
-
-        connections[p] = connection
-        print("Started connection to host " + str(p))
-
-    for p in range(num_players):
-        if p == my_player_id:
-            continue
-        connection = connections[p]
-        print("Connecting to host " + str(p) + " (" + connection.host + ":" + str(connection.port) + ")")
-        while not connection.connected:
-            SDL_Delay(100)
-
-        print("Connected to host " + str(p))
-        connection.start_update()
-
-    print("Finished")
-    sys.exit(0)
+    messaging = MessagingHandler()
+    messaging.connect(player_adds, num_players, my_player_id)
 
     window = init_window()
     running = True
