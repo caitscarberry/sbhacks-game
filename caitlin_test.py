@@ -13,8 +13,7 @@ from graphics.rect import Rect
 from gameplay.entity import Player
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
-import platform
-import os
+from networking.messaging_handler import MessagingHandler
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -33,33 +32,9 @@ def main():
 
     player_adds = players_str.split()
     num_players = len(player_adds)
-    connections = [None] * num_players
 
-    for p in range(num_players):
-        if p == my_player_id:
-            continue
-        connection = None
-        iAmServer = p > my_player_id
-        if iAmServer:
-            connection = MessageQueueHolder(True)
-            connection.start_connect(player_adds[my_player_id], 25565 + p)
-        else:
-            connection = MessageQueueHolder(False)
-            connection.start_connect(player_adds[p], 25565 + my_player_id)
-
-        connections[p] = connection
-        print("Started connection to host " + str(p))
-
-    for p in range(num_players):
-        if p == my_player_id:
-            continue
-        connection = connections[p]
-        print("Connecting to host " + str(p) + " (" + connection.host + ":" + str(connection.port) + ")")
-        while not connection.connected:
-            SDL_Delay(100)
-
-        print("Connected to host " + str(p))
-        connection.start_update()
+    messaging = MessagingHandler()
+    messaging.connect(player_adds, num_players, my_player_id)
 
     window = init_window()
     running = True
@@ -96,17 +71,11 @@ def main():
                 if player_event.params["code"] == "NONE":
                     continue
                 game_events.append(player_event)
-                for connection in connections:
-                    if connection is None:
-                        continue
-                    connection.send(player_event.serialize().encode("utf-8"))
-
-        for connection in connections:
-            if connection is None:
-                continue
-            while connection.queue.qsize() > 0:
-                msg = connection.queue.get()
-                game_events.append(GameEvent.deserialize(msg.decode("utf-8")))
+                messaging.broadcast(player_event.serialize().encode("utf-8"))
+        messages = messaging.get_messages()
+        while messages.qsize() > 0:
+            msg = messages.get()
+            game_events.append(GameEvent.deserialize(msg.decode("utf-8")))
 
         for event in game_events:
             if (event.params["type"] == "PLAYER"):
