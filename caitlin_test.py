@@ -9,6 +9,7 @@ import graphics.sprite
 import graphics.render
 import sys
 import socket
+from graphics.rect import Rect
 from gameplay.entity import Player
 from gameplay.events import PlayerEvent, GameEvent
 
@@ -69,12 +70,15 @@ def main():
     connection.start_update()
 
     col = Color(123, 123, 123)
-    #playersprite = graphics.sprite.Sprite.from_file("./assets/players.png")
+
+    spritefac = graphics.sprite.SpriteFactory(render)
+    playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
+
     controls_state = ControlsState()
     while running == True:
         input_events = sdl2.ext.get_events()
         render.clear(col)
-        #my_render.draw_sprite(playersprite, player.x, player.y)
+        my_render.draw_sprite(playersprite, players[my_player_id].x, players[my_player_id].y)
 
         game_events = []
 
