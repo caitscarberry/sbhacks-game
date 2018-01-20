@@ -1,22 +1,17 @@
 import socket
-from threading import Thread
-from time import sleep
 
 
 class EasySocket:
-    def __init__(self, sock=None, isServer=False):
-        if sock is None:
-            self.sock = socket.socket(
-                            socket.AF_INET, socket.SOCK_STREAM)
-        else:
-            self.sock = sock
+    def __init__(self, isServer=False):
+        self.sock = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM)
         self.prefix = b''
         self.isServer = isServer
         if isServer:
             self.conn = None
             self.addr = ''
 
-    def connect(self, host=None, port=None):
+    def connect(self, host, port):
         if self.isServer:
             self.sock.bind((host, port))
             self.sock.listen(1)
@@ -39,6 +34,7 @@ class EasySocket:
         ret = self.prefix[0:ind]
         self.prefix = self.prefix[ind + 1:]
         return ret
+
 
 """
 def threaded_function(serve):
