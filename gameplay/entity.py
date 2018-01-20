@@ -1,17 +1,20 @@
+from gameplay import physics
+
 class Entity:
-     def __init__(self):
-        pass
+    def __init__(self, pos=physics.Vec2()):
+        self.pos = pos
+     
     def processInputEvt(self):
         pass
+    
     def update(self):
         pass
+    
 
 class Player(Entity):
     def __init__(self, x, y):
         self.velocity_x = 0
         self.velocity_y = 0
-        self.x = 0
-        self.y = 0
         self.speed = 1
 
     def processInputEvt(self):
