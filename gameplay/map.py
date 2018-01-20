@@ -20,7 +20,6 @@ def genLocBoard(boardSize, numEmptySquares):
         numEmptySquares = totalSquares
 
     roomLocs = [[1]*boardSize for _ in range(boardSize)]
-    print (roomLocs)
     while numEmptySquares > 0:
         xLoc = random.randrange(0, boardSize)
         yLoc = random.randrange(0, boardSize)
