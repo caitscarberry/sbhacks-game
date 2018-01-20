@@ -37,9 +37,11 @@ def main():
         print("Please provide player file name and player id")
         sys.exit(1)
 
-    player_file = open(sys.argv[1], "r")
-    my_player_id = int(sys.argv[2])
-    players_str = player_file.read()
+    my_player_id = None
+    players_str = None
+    with open(sys.argv[1], "r") as player_file:
+        my_player_id = int(sys.argv[2])
+        players_str = player_file.read()
 
     player_adds = players_str.split()
     num_players = len(player_adds)
