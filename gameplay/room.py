@@ -24,13 +24,15 @@ class Room:
             if random.randrange(0, 100) < self.probOfSameEnemies: #same enemies
                 enemy = self.chooseEnemy()
                 currDifficulty = 0
-                while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty:
+                while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty \
+                        and len(self.enemies) <= self.maxEnemies:
                     currDifficulty += self.enemyDifficulties[enemy]
                     self.enemies.append(enemy) #make sure that if you change this to an object you gen a new one
             else: #different enemies
                 enemy = self.chooseEnemy()
                 currDifficulty = 0
-                while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty:
+                while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty\
+                        and len(self.enemies) <= self.maxEnemies:
                     self.enemies.append(enemy)
                     currDifficulty += self.enemyDifficulties[enemy]
                     enemy = self.chooseEnemy()
