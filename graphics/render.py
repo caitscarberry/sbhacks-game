@@ -18,7 +18,6 @@ class Renderer:
         sdlrender = self.target.sdlrenderer
 
         #TODO: Remove
-        texture = sdl2.SDL_CreateTextureFromSurface(sdlrender.contents, texture)
         retcode = rcopy(sdlrender, texture, None, pointer(rect))
         if retcode == -1:
             raise sdl2.ext.SDLError()
