@@ -14,6 +14,7 @@ from gameplay.entity import Player
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
 from networking.messaging_handler import MessagingHandler
+import graphics.view
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -36,9 +37,11 @@ def main():
     messaging = MessagingHandler()
     messaging.connect(player_adds, num_players, my_player_id)
 
-    window = init_window()
+    graphics.view.initView()
+
     running = True
-    render = sdl2.ext.sprite.Renderer(window)
+    print(graphics.view.window)
+    render = sdl2.ext.sprite.Renderer(graphics.view.window)
     my_render = graphics.render.Renderer(render)
 
     col = Color(123, 123, 123)
@@ -87,7 +90,7 @@ def main():
         for player in players:
             player.render(my_render)
         render.present()
-        window.refresh()
+        graphics.view.window.refresh()
         sdl2.SDL_Delay(16)
 
 
