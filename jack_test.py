@@ -57,7 +57,7 @@ def main():
     connection.start_update()
 
     if iAmServer:
-        connection.send('test123')
+        connection.send(b'test123')
     else:
         while connection.queue.qsize() == 0:
             SDL_Delay(100)
