@@ -70,7 +70,7 @@ def main():
         while not connection.connected:
             SDL_Delay(100)
 
-        print("Connecting to host " + str(p))
+        print("Connected to host " + str(p))
         connection.start_update()
 
     print("Finished")
