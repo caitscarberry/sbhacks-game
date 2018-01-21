@@ -78,10 +78,8 @@ class GameView(SubView):
         for player in gameplay.state.players:
             sprite = player.getSprite()
             self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
-        # TODO: change to only render in current room
-        if gameplay.state.floor.board[0][0] is not None:
-            for enemy in gameplay.state.floor.board[0][0].enemies:
-                if not isinstance(enemy, int):
-                    sprite = enemy.getSprite()
-                    self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
+        for enemy in gameplay.state.floor.board[roomX][roomY].enemies:
+            if not isinstance(enemy, int):
+                sprite = enemy.getSprite()
+                self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
         sprite_renderer.draw_collision_boxes(gameplay.state.floor.board[roomX][roomY].simulation)

@@ -124,4 +124,5 @@ class Room:
                                          self.background.rect.y + self.background.rect.height / 2,
                                          graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
         sprites = sprites + [x.getSprite() for x in self.projectiles.values()]
+        sprites = sprites + [x.getSprite() for x in self.collidable]
         return sprites
