@@ -129,7 +129,6 @@ class Room:
 
         dead_enemies = [x for x in self.enemies if x.death_recorded]
         for enemy in dead_enemies:
-            print("REMOVING ENEMY")
             self.simulation.remove_object(enemy.collider)
             del enemy
 

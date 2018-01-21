@@ -36,7 +36,7 @@ class Player(Entity):
     def takeDamage(self, amount):
         self.currHealth -= amount
         if self.currHealth < 0:
-            print ("You Died")
+            pass
             #dead
     def setRoom(self, newX, newY):
         if newX != self.roomX or newY != self.roomY:
