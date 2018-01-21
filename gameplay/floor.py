@@ -3,15 +3,38 @@ from gameplay.entity import Entity #for ladder
 import random
 
 class Floor:
-    def __init__(self, bSize, numEmptySquares):
+    def __init__(self):
+        self.boardSize = 0
+        self.distanceSeparator = 0
+        self.board = [[None]*self.boardSize for _ in range(self.boardSize)]
+        self.ladderLoc = (0,0)
+        self.startingLocs = []
+
+    def genFloor(self, bSize, numEmptySquares):
         self.boardSize = bSize
         self.distanceSeparator = self.boardSize // 4
         self.board = getBoard(self.boardSize, numEmptySquares)
         self.ladderLoc = self.genLadderLoc()
         #adds ladder entity to collidable list
-        self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(Entity())
-        self.startingLocs = []
+        self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(1) 
         self.genStartingLocs()
+
+    def toDict(self):
+        brd = [[None]*self.boardSize for _ in range(self.boardSize)]
+        for i in range(self.boardSize):
+            for j in range(self.boardSize):
+                brd[i][j] = self.board[i][j].toDict()
+
+        dict = {"board": brd,
+                "startingLocs" : self.startingLocs}
+        return dict
+
+    def fromDict(self, dict):
+        self.startingLocs = dict["startingLocs"]
+        for i in range(dict["board"]):
+            for j in range(dict["board"][0]):
+                self.board[i][j] = dict["board"][i][j]
+
 
     def __str__(self):
         for i in range(self.boardSize):

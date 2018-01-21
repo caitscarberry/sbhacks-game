@@ -1,7 +1,5 @@
 import sdl2
 import sdl2.ext
-from gameplay.map import getBoard
-from gameplay.room import Room
 from gameplay.floor import Floor
 
 from graphics.init import init_window
@@ -20,7 +18,9 @@ def main():
         print('')
 
     '''
-    print(Room())
+    f = Floor()
+    f.genFloor(10, 25)
+    print(f)
 
 
 main()
