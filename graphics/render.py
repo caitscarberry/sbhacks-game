@@ -13,15 +13,15 @@ class SpriteRenderer:
         texture = sprite.texture
         dstrect = sdl2.SDL_Rect()
 
-        dstrect.x = int(x - sprite.rect.width / 2)
-        dstrect.y = int(y - sprite.rect.height / 2)
-
         if width is not None and height is not None:
             dstrect.w = width
             dstrect.h = height
         else:
             dstrect.w = sprite.rect.width
             dstrect.h = sprite.rect.height
+
+        dstrect.x = int(x - dstrect.w / 2)
+        dstrect.y = int(y - dstrect.h / 2)
 
         sdlrender = self.target.sdlrenderer
         
