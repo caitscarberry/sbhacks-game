@@ -129,9 +129,7 @@ class Player(Entity):
         if self.id != gameplay.state.my_player_id:
             if newX != self.roomX or newY != self.roomY:
                 gameplay.state.floor.board[self.roomX][self.roomY].simulation.remove_object(self.collider)
-                local_player = gameplay.state.players[gameplay.state.my_player_id]
-                if newX == local_player.roomX and newY == local_player.roomY:
-                    gameplay.state.floor.board[newX][newY].simulation.add_object(self.collider)
+                gameplay.state.floor.board[newX][newY].simulation.add_object(self.collider)
 
         self.roomX = newX
         self.roomY = newY
