@@ -96,7 +96,7 @@ class Room:
         return chosenEnemy
 
     def getSprites(self):
-        sprites = [graphics.view.SpriteToRender(self.background, 0, 0)]
+        sprites = [graphics.view.SpriteToRender(self.background, 0, 0, graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
         sprites = sprites + [x.getSprite() for x in self.projectiles]
         return sprites
         
