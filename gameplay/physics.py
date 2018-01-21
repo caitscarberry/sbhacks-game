@@ -219,7 +219,10 @@ class Simulation:
             if obj.collision_type != collision_types.static:
                 self.move_object(obj, distance)
         for x in self.dirtyObj:
-            self.objects.remove(x)
+            try:
+                self.objects.remove(x)
+            except Exception:
+                pass
         self.dirtyObj = []
 
     def add_object(self, obj):

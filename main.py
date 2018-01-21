@@ -20,6 +20,7 @@ from gameplay.physics import Simulation
 import graphics.view
 from gameplay.floor import Floor
 import json
+from queue import Queue
 
 FRAME_LENGTH = 17
 
@@ -106,7 +107,11 @@ def main():
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
         last_phys_time = curr_time
+
+        gameplay.state.global_queue = Queue()
         gameplay.state.floor.board[my_player.roomX][my_player.roomY].simulation.step(delta / 1000)
+        while not gameplay.state.global_queue.empty():
+            messaging.broadcast(gameplay.state.global_queue.get().serialize().encode("utf-8"))
 
         graphics.view.render()
 
