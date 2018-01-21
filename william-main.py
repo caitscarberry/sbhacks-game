@@ -55,7 +55,7 @@ def main():
     wall = physics.PhysObject(physics.Vec2(300, 300), physics.Polygon.square(300, 300, 200, 200))
     player = players[0]
     sim.add_object(player.collider)
-    player.collider.collision_type = physics.PhysObject.collision_types.dynamic
+    player.collider.collision_type = physics.collision_types.dynamic
     sim.add_object(wall)
     while running == True:
         input_events = sdl2.ext.get_events()

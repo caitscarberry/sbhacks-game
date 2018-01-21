@@ -79,32 +79,34 @@ class Vec2:
 
     
 class AABB:
-    __slots__ = ["x1", "y1", "x2", "y2"]
+    __slots__ = ["left", "right", "top", "bottom"]
     def __init__(self, x, y, w, h):
-        self.x1 = x
-        self.y1 = y
-        self.x2 = x + w
-        self.y2 = y + h
+        self.left = x
+        self.top = y
+        self.right = x + w
+        self.bottom = y + h
 
     def intersects(self, other):
-        return self.x1 <= other.x1 and self.x2 <= other.x2 \
-            and self.y1 <= other.y1 and self.y2 <= other.y2
+        return not (other.left > self.right or \
+                    other.right < self.left or \
+                    other.top > self.bottom or \
+                    other.bottom < self.top)
 
     def extend(self, distance: Vec2):
-        x1, x2 = self.x1, self.x2
-        y1, y2 = self.y1, self.y2
+        left, right = self.left, self.right
+        top, bottom = self.top, self.bottom
         if distance.x < 0: # Negative X
-            x1 += distance.x
+            left += distance.x
         else:
-            x2 += distance.x
+            right += distance.x
         if distance.y < 0: # Negative Y
-            y1 += distance.y
+            top += distance.y
         else:
-            y2 += distance.y
-        return AABB(x1, y1, x2 - x1, y2 - y1)
+            bottom += distance.y
+        return AABB(left, top, right - left, bottom - top)
 
     def __repr__(self):
-        return "[{}, {}, {}, {}]".format(self.x1, self.y1, self.x2, self.y2)
+        return "[({}, {}), ({}, {})]".format(self.left, self.top, self.right, self.bottom)
     
 
 class LineSegment:
@@ -184,8 +186,8 @@ class Simulation:
     def step(self, dt):
         for obj in self.objects:
             distance = obj.vel * dt
-            print(distance)
-            print(obj.pos)
+            #print(distance)
+            #print(obj.pos)
             if obj.collision_type == collision_types.dynamic:
                 self.move_object(obj, distance)
         
@@ -194,7 +196,7 @@ class Simulation:
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
-        print(extended_box)
+        print("Extended aabb", extended_box)
         collisions = []
         # Get all possible collisions
 
