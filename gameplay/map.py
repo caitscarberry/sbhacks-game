@@ -2,6 +2,7 @@ from gameplay.room import Room
 from queue import Queue
 import gameplay.state
 import random
+from gameplay.entity import Door
 
 
 def getBoard(boardSize, numEmptySquares):
@@ -95,10 +96,10 @@ def addDoors (board):
             if leftX < 0:
                 leftX = len(board) - 1
             if (board[leftX][roomY]):
-                board[roomX][roomY].collidable.append(gameplay.state.doorL)
+                board[roomX][roomY].collidable.append(Door(3))
             if (board[rightX][roomY]):
-                board[roomX][roomY].collidable.append(gameplay.state.doorR)
+                board[roomX][roomY].collidable.append(Door(1))
             if (board[roomX][upY]):
-                board[roomX][roomY].collidable.append(gameplay.state.doorT)
+                board[roomX][roomY].collidable.append(Door(0))
             if (board[roomX][downY]):
-                board[roomX][roomY].collidable.append(gameplay.state.doorB)
+                board[roomX][roomY].collidable.append(Door(2))

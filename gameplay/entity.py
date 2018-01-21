@@ -39,9 +39,9 @@ class Entity:
 
 class Door(Entity):
     def __init__(self, dir):
-        leftX = graphics.view.SIDEBAR_WIDTH + 32
-        midX = graphics.view.SIDEBAR_WIDTH + (graphics.view.GAME_WIDTH / 2)
-        rightX = graphics.view.WINDOW_SIZE[0] - 32
+        leftX = 32
+        midX = graphics.view.GAME_WIDTH / 2
+        rightX = graphics.view.GAME_WIDTH - 32
         topY = 32
         midY = graphics.view.WINDOW_SIZE[1] / 2
         botY = graphics.view.WINDOW_SIZE[1] - 32
@@ -76,6 +76,13 @@ class Door(Entity):
             self.sprite = gameplay.state.doorB
         elif dir == 3:
             self.sprite = gameplay.state.doorL
+
+    def getSprite(self):
+        if (self.sprite == None):
+            return
+        return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x),
+                                            int(self.collider.pos.y), 64, 64)
+
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
