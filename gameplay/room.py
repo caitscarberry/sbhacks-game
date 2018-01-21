@@ -5,6 +5,7 @@ from gameplay.physics import Simulation, PhysObject, Polygon, Vec2
 from gameplay.monster import Monster
 from gameplay.entity import Bullet
 from gameplay.entity import Door
+import gameplay.state
 
 
 class Room:
@@ -80,9 +81,9 @@ class Room:
         return str(self.enemies)
 
     def generateEnemies(self):
-        return
         for i in range(random.randrange(1, 3)):
-            self.enemies.append(Monster(0, 500, 500))
+            self.enemies.append(Monster(gameplay.state.curr_id, random.randrange(200, 500), random.randrange(200, 500)))
+            gameplay.state.curr_id += 1
         return
 
         if random.randrange(0, 100) < self.probOfEnemies:  # there are enemies

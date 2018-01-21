@@ -8,4 +8,5 @@ global doorB
 global doorT
 global responsible_for
 global global_queue
+global curr_id
 responsible_for = []

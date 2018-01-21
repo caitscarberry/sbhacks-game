@@ -31,6 +31,7 @@ def nearby(player):
 
 
 def main():
+    gameplay.state.curr_id = 3389
     if len(sys.argv) < 3:
         print("Please provide player file name and player id")
         sys.exit(1)
