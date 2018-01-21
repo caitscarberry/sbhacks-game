@@ -254,7 +254,7 @@ class Player(Entity):
         }
 
         event = GameEvent(game_event_dict)
-        gameplay.state.global_queue.add(event)
+        gameplay.state.global_queue.put(event)
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y):
