@@ -116,7 +116,7 @@ def main():
         for player in gameplay.state.players:
             if player.id != gameplay.state.my_player_id:
                 if player.roomX == my_player.roomX and player.roomY == my_player.roomY:
-                    gameplay.state.floor[player.roomX][player.roomY].simulation.add_object(player.collider)
+                    gameplay.state.floor.board[player.roomX][player.roomY].simulation.add_object(player.collider)
 
         graphics.view.render()
 
