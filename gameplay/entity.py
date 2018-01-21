@@ -43,6 +43,7 @@ class Door(Entity):
         self.toY = nextY
         self.fromX = pastX
         self.fromY = pastY
+        self.dir = dir
         leftX = 32
         midX = graphics.view.GAME_WIDTH / 2
         rightX = graphics.view.GAME_WIDTH - 32
@@ -87,11 +88,17 @@ class Door(Entity):
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x),
                                             int(self.collider.pos.y), 64, 64)
     def to_dict(self):
-        return {"dir": self.dir}
+        return {
+            "dir": self.dir,
+            "to_x": self.toX,
+            "to_y": self.toY,
+            "from_x": self.fromX,
+            "from_y": self.fromY
+        }
 
     @staticmethod
     def from_dict(dict):
-        return Door(dict["dir"])
+        return Door(dict["dir"], dict["to_x"], dict["to_y"], dict["from_x"], dict["from_y"])
 
 class Ladder(Entity):
     def _init__(self):
@@ -207,7 +214,6 @@ class Player(Entity):
                                             int(self.collider.pos.y))
 
     def onDoor(self, obj1, obj2):
-        print("here")
         obj1 = obj1.owner
         obj2 = obj2.owner
         if isinstance(obj1, Door):
@@ -224,21 +230,14 @@ class Player(Entity):
 
 
 class Bullet(Entity):
-    def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
+    def __init__ (self, bullet_id, x, y, direction_x, direction_y):
         print("shooting")
+        self.direction_x = direction_x
+        self.direction_y = direction_y
         self.id = bullet_id
         self.speed = 80
-        #the player that fired this bullet
-        self.player_id = player_id
         self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 10, 10), self, collision_type=physics.collision_types.player)
         self.collider.add_callback(self.onCollide)
-        roomx = gameplay.state.players[player_id].roomX
-        roomy = gameplay.state.players[player_id].roomY
-        room = gameplay.state.floor.board[roomx][roomy]
-        room.simulation.add_object(self.collider)
-        room.projectiles[self.id] = self
-        if player_id == gameplay.state.my_player_id:
-            gameplay.state.responsible_for.append(self.id)
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()
@@ -258,3 +257,16 @@ class Bullet(Entity):
            other.collision_type == physics.collision_types.static or \
            other.collision_type == physics.collision_types.dynamic:
             self.alive = False
+
+    def to_dict(self):
+        return{
+            "id": self.id,
+            "x": self.x,
+            "y": self.y,
+            "d_x": self.direction_x,
+            "d_y": self.direction_y
+        }
+
+    @staticmethod
+    def from_dict(dict):
+        return Bullet(dict["id"], dict["x"], dict["y"], dict["d_x"], dict["d_y"])

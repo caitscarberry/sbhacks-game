@@ -45,15 +45,27 @@ def main():
     graphics.view.initView()
 
     gameplay.state.floor = Floor()
-    gameplay.state.floor.genFloor(3, 3)
+
+    if gameplay.state.my_player_id == 0:
+        gameplay.state.floor.genFloor(3, 3)
+        messaging.broadcast(gameplay.state.floor.to_dict())
+    else:
+        queue = messaging.get_messages()
+        while queue.empty():
+            sdl2.SDL_Delay(10)
+            queue = messaging.get_messages()
+
+        gameplay.state.floor.from_dict(queue.get())
+
     gameplay.state.players = []
     for i in range(num_players):
         new_player = Player(i, 200 + 200 * i, 350)
         gameplay.state.players.append(new_player)
-        new_player.roomX = gameplay.state.floor.startingLocs[0][0]
-        new_player.roomY = gameplay.state.floor.startingLocs[0][1]
+        new_player.roomX = gameplay.state.floor.startingLocs[i][0]
+        new_player.roomY = gameplay.state.floor.startingLocs[i][1]
         print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
-        gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
+        if i == gameplay.state.my_player_id:
+            gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
     
     graphics.view.makeGameSubView()
 

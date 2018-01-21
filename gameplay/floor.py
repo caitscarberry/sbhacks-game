@@ -2,12 +2,13 @@ from gameplay.map import getBoard
 from gameplay.entity import Entity #for ladder
 import random
 from gameplay.events import GameEvent
+from gameplay.room import Room
 
 class Floor:
     def __init__(self):
         self.boardSize = 0
         self.distanceSeparator = 0
-        self.board = [[None]*self.boardSize for _ in range(self.boardSize)]
+        self.board = [[None] * self.boardSize for _ in range(self.boardSize)]
         self.ladderLoc = (0,0)
         self.startingLocs = []
 
@@ -16,26 +17,36 @@ class Floor:
         self.distanceSeparator = self.boardSize // 4
         self.board = getBoard(self.boardSize, numEmptySquares)
         self.ladderLoc = self.genLadderLoc()
-        #adds ladder entity to collidable list
-        self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(1) 
+        # adds ladder entity to collidable list
+        # self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(1)
         self.genStartingLocs()
 
     def to_dict(self):
         brd = [[None]*self.boardSize for _ in range(self.boardSize)]
         for i in range(self.boardSize):
             for j in range(self.boardSize):
-                brd[i][j] = self.board[i][j].to_dict()
+                if self.board[i][j] is None:
+                    brd[i][j] = None
+                else:
+                    brd[i][j] = self.board[i][j].to_dict()
 
         dict = {"board": brd,
-                "startingLocs" : self.startingLocs}
+                "board_size": self.boardSize,
+                "startingLocs": self.startingLocs}
         return dict
 
     # NOTE: NOT STATIC METHOD
     def from_dict(self, dict):
+        self.boardSize = dict["board_size"]
         self.startingLocs = dict["startingLocs"]
-        for i in range(dict["board"]):
-            for j in range(dict["board"][0]):
-                self.board[i][j].from_dict(dict["board"][i][j])
+        self.board = [[None] * self.boardSize for _ in range(self.boardSize)]
+        for x in range(dict["board_size"]):
+            for y in range(dict["board_size"]):
+                if dict["board"][x][y] is None:
+                    self.board[x][y] = None
+                else:
+                    self.board[x][y] = Room()
+                    self.board[x][y].from_dict(dict["board"][x][y])
 
     def get_update_event(self, room_x, room_y):
         game_event_dict = {
