@@ -79,7 +79,8 @@ class Player(Entity):
 
             vel.x = self.speed * (state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT])
             vel.y = self.speed * (state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP])
-            vel = vel / vel.length()
+            if (vel.length() > 0):
+                vel = vel / vel.length()
 
             game_event_dict["code"] = "CHANGE_VELOCITY"
             game_event_dict["velocity"] = vel.to_dict()
