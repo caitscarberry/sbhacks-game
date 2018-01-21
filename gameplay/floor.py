@@ -1,5 +1,5 @@
 from gameplay.map import getBoard
-from gameplay.entity import Entity #for ladder
+from gameplay.entity import Ladder
 import random
 from gameplay.events import GameEvent
 
@@ -17,7 +17,7 @@ class Floor:
         self.board = getBoard(self.boardSize, numEmptySquares)
         self.ladderLoc = self.genLadderLoc()
         #adds ladder entity to collidable list
-        self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(1) 
+        self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(Ladder())
         self.genStartingLocs()
 
     def to_dict(self):
