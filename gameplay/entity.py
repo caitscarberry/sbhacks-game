@@ -121,7 +121,6 @@ class Ladder(Entity):
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
-        print("shooting")
         self.direction_x = direction_x
         self.direction_y = direction_y
         self.id = bullet_id
@@ -154,7 +153,14 @@ class Bullet(Entity):
                         graphics.rect.Rect(0, 0, 129, 112)))
 
     def getSprite(self):
-        return graphics.view.SpriteToRender(self.sprites[0], int(self.collider.pos.x), int(self.collider.pos.y), int(112 / 4), int(129 / 4))
+        res = ((gameplay.state.frame // 20) + int(self.id[-1])) % 4
+        if res  % 2 == 0:
+            return graphics.view.SpriteToRender(self.sprites[res], int(self.collider.pos.x), int(self.collider.pos.y),
+                                                int(112 / 4), int(129 / 4))
+        else:
+            return graphics.view.SpriteToRender(self.sprites[res], int(self.collider.pos.x), int(self.collider.pos.y),
+                                                int(129 / 4), int(112 / 4))
+
 
     def onCollide(self, collider: physics.PhysObject, other: physics.PhysObject):
         if other.collision_type == physics.collision_types.static or \

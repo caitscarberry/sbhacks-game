@@ -57,8 +57,6 @@ class Room:
         projectilesDict = {}
         for key in self.projectiles:
             projectilesDict[key] = self.projectiles[key].to_dict()
-        print("PROJECTILES TO SEND")
-        print(projectilesDict)
 
         collidableList = []
         for i in range(len(self.collidable)):
@@ -82,13 +80,10 @@ class Room:
             self.enemies.append(monster)
             self.simulation.add_object(monster.collider)
         for key in dict["projectiles"]:
-            print("ADDING BULLET")
             b = dict["projectiles"][key]
             bullet = Bullet.from_dict(b)
             self.projectiles[key] = bullet
             self.simulation.add_object(bullet.collider)
-        print("ROOM PROJECTILES:")
-        print(self.projectiles)
 
     def __str__(self):
         return str(self.enemies)

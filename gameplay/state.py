@@ -11,4 +11,5 @@ global my_projectiles
 global responsible_for
 global global_queue
 global curr_id
+global frame
 my_projectiles = []
