@@ -230,7 +230,6 @@ class Simulation:
                 continue
 
             if extended_box.intersects(other.aabb):
-                print("Collision?")
                 collisions.append((other, other.pos - obj.pos))
                 
         collisions.sort(key=lambda x: x[1].squarelength())
@@ -278,5 +277,5 @@ class Simulation:
             elif o < overlap:
                 overlap = o
                 bestaxis = axis
-        print(axis, overlap)
+        #print(axis, overlap)
         return axis.normalize() * overlap
