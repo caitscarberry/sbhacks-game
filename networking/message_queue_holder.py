@@ -11,12 +11,12 @@ class MessageQueueHolder:
         self.port = None
 
     def _connect(self, host, port):
-        self.host = host
-        self.port = port
         self.socket.connect(host, port)
         self.connected = True
 
     def start_connect(self, host, port):
+        self.host = host
+        self.port = port
         sThread = Thread(target=self._connect, args=(host, port,))
         sThread.start()
 

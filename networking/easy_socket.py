@@ -1,4 +1,5 @@
 import socket
+from sdl2 import SDL_Delay
 
 
 class EasySocket:
@@ -19,6 +20,7 @@ class EasySocket:
         else:
             connected = False
             while not connected:
+                SDL_Delay(1000)
                 try:
                     self.sock.connect((host, port))
                     connected = True
