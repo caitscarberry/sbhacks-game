@@ -22,6 +22,7 @@ class Player(Entity):
         self.collider.add_callback(self.onEnemy)
         self.MaxHealth = 500
         self.currHealth = 500
+        self.lastMeleeHit = 0
         self.width = 66
         self.height = 93
         self.speed = 200
@@ -137,16 +138,20 @@ class Player(Entity):
         obj1 = obj1.owner
         obj2 = obj2.owner
         #collision with monster
-        if isinstance(obj1, Player):
+        if isinstance(obj1, Monster):
             foo = obj1
             obj1 = obj2
             obj2 = foo
 
-        if not isinstance(obj1,Player) or not isinstance(obj2, Player):
+        if not isinstance(obj1,Player) or not isinstance(obj2, Monster):
             return
         if obj1.id != gameplay.state.my_player_id:
             return
-        gameplay.state.players[gameplay.state.my_player_id].takeDamage(10)
+
+        currTime = sdl2.SDL_GetTicks()
+        if self.lastMeleeHit - currTime > 500:
+            gameplay.state.players[gameplay.state.my_player_id].takeDamage(10)
+            self.lastMeleeHit = currTime
 
     def onDoor(self, obj1, obj2):
         obj1 = obj1.owner
