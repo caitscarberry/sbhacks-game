@@ -16,7 +16,7 @@ class Room:
         self.maxDifficulty = 17
         self.maxEnemies = 5
         self.enemies = []
-        self.projectiles = {}
+        self.projectiles = []
         self.collidable = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
         self.background.rect.x
@@ -46,18 +46,18 @@ class Room:
         rect = Polygon.square(x, y, 32, height - 100)
         self.simulation.add_object(PhysObject(rect.pos, rect, None))
 
-    def toDict(self):
+    def to_dict(self):
         enemiesList = []
         for i in range(len(self.enemies)):
-            enemiesList.append(self.enemies[i].toDict())
+            enemiesList.append(self.enemies[i].to_dict())
 
         projectilesList = []
         for i in range(len(self.projectiles)):
-            projectilesList.append(self.projectiles[i].toDict())
+            projectilesList.append(self.projectiles[i].to_dict())
 
         collidableList = []
-        for i in range(len(self.enemies)):
-            collidableList.append(self.collidable[i].toDict())
+        for i in range(len(self.collidable)):
+            collidableList.append(self.collidable[i].to_dict())
 
         dict = {"enemies": enemiesList,
                 "projectiles": projectilesList,
@@ -65,17 +65,21 @@ class Room:
 
         return dict
 
-    def fromDict(self, dict):
+    # NOTE: NOT STATIC METHOD
+    def from_dict(self, dict):
         self.enemies = []
         self.projectiles = []
         self.collidable = []
 
+        self.enemies = []
         for i in dict["enemies"]:
-            self.enemies.append(i.fromDict())
+            self.enemies.append(Monster.from_dict(i))
         for i in dict["projectiles"]:
-            self.projectiles.append(i.fromDict())
+            # TODO
+            pass
         for i in dict["collidable"]:
-            self.collidable.append(i.fromDict())
+
+            self.collidable.append(i.from_dict())
 
     def __str__(self):
         return str(self.enemies)
