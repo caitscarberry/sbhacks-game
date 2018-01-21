@@ -7,6 +7,7 @@ from graphics.rect import Rect
 import graphics.sprite
 import graphics.render
 import graphics.view
+import gameplay.state
 
 
 class Entity:
@@ -79,6 +80,12 @@ class Player(Entity):
 
             return GameEvent(game_event_dict)
 
+        if (event.type == sdl2.SDL_MOUSEBUTTONDOWN):
+            game_event_dict["code"] = "SHOOT"
+            game_event_dict["direction_x"] = 1
+            game_event_dict["direction_y"] = 0
+            return GameEvent(game_event_dict)
+
         game_event_dict["code"] = "NONE"
         return GameEvent(game_event_dict)
 
@@ -96,13 +103,14 @@ class Player(Entity):
             #thus it is safe to have all clients execute the shoot function,
             #because the bullet's position will be quickly corrected if it gets
             #out of sync
-            self.shoot(event.direction)
+            self.shoot(event.params["direction_x"],event.params["direction_y"])
 
-    def shoot(self, direction):
+    def shoot(self, direction_x,direction_y):
         #each bullet is identified by playerid_bulletnumber
         #this ensures that bullet ids are globally unique
-        bullet = Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
+        bullet = Bullet(str(self.id) + "_" + str(self.next_bullet_id), self.collider.pos.x, self.collider.pos.y, direction_x, direction_y, self.id)
         self.next_bullet_id += 1
+        print("x: %d, y: %d" % (self.roomX, self.roomY))
 
     def getSprite(self):
         if (self.sprite == None):
@@ -110,8 +118,28 @@ class Player(Entity):
         return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x), int(self.collider.pos.y))
 
 class Bullet(Entity):
-    def __init__ (self, bullet_id, x, y, direction, player_id):
+    def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
+        print("shooting")
         self.id = bullet_id
-        self.speed = 5
+        self.speed = 20
         #the player that fired this bullet
         self.player_id = player_id
+        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x+direction_x*5, y+direction_y*5, 5, 5), collision_type=physics.collision_types.dynamic)
+        roomx = gameplay.state.players[player_id].roomX
+        roomy = gameplay.state.players[player_id].roomY
+        room = gameplay.state.floor.board[roomx][roomy]
+        print("bullet room x: %d, y: %d" % (roomx, roomy))
+        room.simulation.add_object(self.collider)
+        room.projectiles.append(self)
+        print(room.projectiles)
+        self.collider.vel.x = direction_x * self.speed
+        self.collider.vel.y = direction_y * self.speed
+        self.load_sprite()
+
+    def load_sprite(self):
+        self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100, 115, 66, 93))
+
+    def getSprite(self):
+        if (self.sprite == None):
+            return
+        return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x), int(self.collider.pos.y))

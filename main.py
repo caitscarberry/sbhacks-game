@@ -46,10 +46,13 @@ def main():
     gameplay.state.floor = Floor()
     gameplay.state.floor.genFloor(10, 25)
     gameplay.state.players = []
-    sim = Simulation()
     for i in range(num_players):
-        gameplay.state.players.append(Player(i, 50 * i, 50))
-        sim.add_object(gameplay.state.players[i].collider)
+        new_player = Player(i, 50 * i, 50)
+        gameplay.state.players.append(new_player)
+        new_player.roomX = gameplay.state.floor.startingLocs[i][0]
+        new_player.roomY = gameplay.state.floor.startingLocs[i][1]
+        print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
+        gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
     
     
     last_phys_time = sdl2.SDL_GetTicks()
@@ -85,7 +88,10 @@ def main():
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
         last_phys_time = curr_time
-        sim.step(delta / 1000)
+        for column in gameplay.state.floor.board:
+            for room in column:
+                if room is not None:
+                    room.simulation.step(delta / 1000)
 
         graphics.view.render()
 

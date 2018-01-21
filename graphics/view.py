@@ -60,6 +60,8 @@ class GameView(SubView):
     def render(self):
         roomX, roomY = gameplay.state.floor.startingLocs[0]
         sprites = gameplay.state.floor.board[roomX][roomY].getSprites()
+        if (sprites is None):
+            return
         for sprite in sprites:
             self.renderSprite(sprite.img, sprite.x, sprite.y)
         for player in gameplay.state.players:
