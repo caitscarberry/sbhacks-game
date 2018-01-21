@@ -147,9 +147,10 @@ class Player(Entity):
             return
         if obj1.id != gameplay.state.my_player_id:
             return
-
+        print("Monster")
         currTime = sdl2.SDL_GetTicks()
-        if self.lastMeleeHit - currTime > 500:
+        if self.lastMeleeHit - currTime > 100:
+            print("Damage")
             gameplay.state.players[gameplay.state.my_player_id].takeDamage(10)
             self.lastMeleeHit = currTime
 
