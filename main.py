@@ -113,9 +113,10 @@ def main():
                             "pos": b.collider.pos.to_dict(),
                             "vel": b.collider.pos.to_dict(),
                         }
-                        print(heartbeat_dict)
+                        
                         messaging.broadcast(player_event.serialize().encode("utf-8"))
                     room.simulation.step(delta / 1000)
+                    room.cleanup()
                 roomY+=1
             roomX+=1
 
