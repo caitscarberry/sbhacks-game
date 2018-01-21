@@ -105,7 +105,7 @@ class Ladder(Entity):
         return None
 
 class Bullet(Entity):
-    def __init__ (self, bullet_id, x, y, direction_x, direction_y):
+    def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
         print("shooting")
         self.direction_x = direction_x
         self.direction_y = direction_y
@@ -113,10 +113,18 @@ class Bullet(Entity):
         self.speed = 80
         self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 10, 10), self, collision_type=physics.collision_types.player)
         self.collider.add_callback(self.onCollide)
+        roomx = gameplay.state.players[player_id].roomX
+        roomy = gameplay.state.players[player_id].roomY
+        room = gameplay.state.floor.board[roomx][roomy]
+        room.simulation.add_object(self.collider)
+        room.projectiles[self.id] = self
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()
         self.alive = True
+        self.player_id = player_id
+        if (self.player_id == gameplay.state.my_player_id):
+            gameplay.state.my_projectiles.append((roomx, roomy, self.id))
 
     def load_sprite(self):
         self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100, 115, 66, 93))
@@ -136,12 +144,13 @@ class Bullet(Entity):
     def to_dict(self):
         return{
             "id": self.id,
-            "x": self.x,
-            "y": self.y,
+            "x": self.collider.pos.x,
+            "y": self.collider.pos.y,
             "d_x": self.direction_x,
-            "d_y": self.direction_y
+            "d_y": self.direction_y,
+            "player_id": self.player_id
         }
 
     @staticmethod
     def from_dict(dict):
-        return Bullet(dict["id"], dict["x"], dict["y"], dict["d_x"], dict["d_y"])
+        return Bullet(dict["id"], dict["x"], dict["y"], dict["d_x"], dict["d_y"], dict["player_id"])

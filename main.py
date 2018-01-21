@@ -69,8 +69,8 @@ def main():
     for i in range(num_players):
         new_player = Player(i, 200 + 200 * i, 350)
         gameplay.state.players.append(new_player)
-        new_player.roomX = gameplay.state.floor.startingLocs[i][0]
-        new_player.roomY = gameplay.state.floor.startingLocs[i][1]
+        new_player.roomX = gameplay.state.floor.startingLocs[0][0]
+        new_player.roomY = gameplay.state.floor.startingLocs[0][1]
         print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
         gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
 
@@ -146,6 +146,9 @@ def main():
             if update_dict.params["player_id"] == gameplay.state.my_player_id and \
                     update_dict.params["code"] == "CHANGE_ROOM":
                 messaging.broadcast(monster_update_str)
+
+        for proj in gameplay.state.my_projectiles:
+            print(proj)
 
         for player in gameplay.state.players:
             if player.id != gameplay.state.my_player_id:

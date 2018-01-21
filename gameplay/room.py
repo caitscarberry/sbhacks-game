@@ -19,7 +19,7 @@ class Room:
         self.maxDifficulty = 17
         self.maxEnemies = 5
         self.enemies = []
-        self.projectiles = []
+        self.projectiles = {}
         self.collidable = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
         self.background.rect.x
@@ -54,23 +54,25 @@ class Room:
         for i in range(len(self.enemies)):
             enemiesList.append(self.enemies[i].to_dict())
 
-        projectilesList = []
-        for i in range(len(self.projectiles)):
-            projectilesList.append(self.projectiles[i].to_dict())
+        projectilesDict = {}
+        for key in self.projectiles:
+            projectilesDict[key] = self.projectiles[key].to_dict()
+        print("PROJECTILES TO SEND")
+        print(projectilesDict)
 
         collidableList = []
         for i in range(len(self.collidable)):
             collidableList.append(self.collidable[i].to_dict())
 
         dict = {"enemies": enemiesList,
-                "projectiles": projectilesList}
+                "projectiles": projectilesDict}
 
         return dict
 
     # NOTE: NOT STATIC METHOD
     def from_dict(self, dict):
         self.enemies = []
-        self.projectiles = []
+        self.projectiles = {}
 
         for o in self.simulation.objects:
             if isinstance(o.owner, Monster) or isinstance(o.owner, Bullet):
@@ -79,10 +81,14 @@ class Room:
             monster = Monster.from_dict(i)
             self.enemies.append(monster)
             self.simulation.add_object(monster.collider)
-        for i in dict["projectiles"]:
-            bullet = Bullet.from_dict(i)
-            self.projectiles.append(bullet)
+        for key in dict["projectiles"]:
+            print("ADDING BULLET")
+            b = dict["projectiles"][key]
+            bullet = Bullet.from_dict(b)
+            self.projectiles[key] = bullet
             self.simulation.add_object(bullet.collider)
+        print("ROOM PROJECTILES:")
+        print(self.projectiles)
 
     def __str__(self):
         return str(self.enemies)
@@ -143,6 +149,6 @@ class Room:
             graphics.view.SpriteToRender(self.background, self.background.rect.x + self.background.rect.width / 2,
                                          self.background.rect.y + self.background.rect.height / 2,
                                          graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
-        sprites = sprites + [x.getSprite() for x in self.projectiles]
+        sprites = sprites + [x.getSprite() for x in self.projectiles.values()]
         sprites = sprites + [x.getSprite() for x in self.collidable]
         return sprites
