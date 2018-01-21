@@ -87,6 +87,13 @@ class Door(Entity):
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x),
                                             int(self.collider.pos.y), 64, 64)
 
+class Ladder(Entity):
+    def _init__(self):
+        self.collider = None #set this
+        #dont forget callback
+        self.width = 64
+        self.height = 64
+        self.speed = 0
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
