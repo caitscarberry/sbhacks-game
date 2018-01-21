@@ -19,6 +19,7 @@ from networking.messaging_handler import MessagingHandler
 from gameplay.physics import Simulation
 import graphics.view
 from gameplay.floor import Floor
+import json
 
 FRAME_LENGTH = 17
 
@@ -49,8 +50,8 @@ def main():
     for i in range(num_players):
         new_player = Player(i, 50 * i, 50)
         gameplay.state.players.append(new_player)
-        new_player.roomX = gameplay.state.floor.startingLocs[i][0]
-        new_player.roomY = gameplay.state.floor.startingLocs[i][1]
+        new_player.roomX = gameplay.state.floor.startingLocs[0][0]
+        new_player.roomY = gameplay.state.floor.startingLocs[0][1]
         print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
         gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
     
@@ -85,14 +86,38 @@ def main():
         for event in game_events:
             if (event.params["type"] == "PLAYER"):
                 gameplay.state.players[event.params["player_id"]].processPlayerEvent(event)
+            if (event.params["type"] == "STATUS"):
+                room = gameplay.state.floor.board[event.params["roomX"]["roomY"]]
+                if event.params["kind"]== "bullet":
+                    print("UPDATING BULLET")
+                    obj = room.projectiles[event.params["id"]]
+                    obj.collider.pos.from_dict(event.params["pos"])
+                    obj.collider.vel.from_dict(event.params["vel"])
 
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
         last_phys_time = curr_time
+        roomX = 0
+        roomY = 0
         for column in gameplay.state.floor.board:
             for room in column:
                 if room is not None:
+                    for p in [x for x in room.projectiles.keys() if x in gameplay.state.responsible_for]:
+                        b = room.projectiles[p]
+                        heartbeat_dict = {
+                            "type": "STATUS",
+                            "kind": "bullet",
+                            "player_id": b.id,
+                            "room_id": (roomX,roomY),
+                            "id": b.id,
+                            "pos": b.collider.pos.to_dict(),
+                            "vel": b.collider.pos.to_dict(),
+                        }
+                        print(heartbeat_dict)
+                        messaging.broadcast(player_event.serialize().encode("utf-8"))
                     room.simulation.step(delta / 1000)
+                roomY+=1
+            roomX+=1
 
         graphics.view.render()
 
