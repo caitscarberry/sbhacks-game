@@ -17,6 +17,7 @@ from gameplay import physics
 from networking.messaging_handler import MessagingHandler
 import graphics.view
 import gameplay.state
+from gameplay.floor import Floor
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -43,8 +44,9 @@ def main():
     messaging.connect(player_adds, num_players, my_player_id)
 
     graphics.view.initView()
-
     graphics.view.makeGameSubView()
+
+    gameplay.state.floor = Floor(10,1)
 
     running = True
 

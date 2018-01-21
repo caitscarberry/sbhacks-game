@@ -3,9 +3,8 @@ import sdl2.ext
 import ctypes
 from graphics.render import SpriteRenderer
 from graphics.sprite import SpriteFactory
-from gameplay.room import Room
 import gameplay.state
-import collections
+from graphics.sprite_to_render import SpriteToRender
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -41,8 +40,6 @@ def render():
     raw_renderer.present()
     window.refresh()
 
-SpriteToRender = collections.namedtuple('SpriteToRender',('img','x','y'))
-
 class SubView:
     def __init__(self, x, y, height, width):
         self.x = x
@@ -61,10 +58,10 @@ class GameView(SubView):
         super().__init__(x, y, height, width)
 
     def render(self):
-        sprites = Room().getSprites()
+        roomX, roomY = gameplay.state.floor.startingLocs[0]
+        sprites = gameplay.state.floor.board[roomX][roomY].getSprites()
         for sprite in sprites:
             self.renderSprite(sprite.img, sprite.x, sprite.y)
         for player in gameplay.state.players:
             sprite = player.getSprite()
             self.renderSprite(sprite.img, sprite.x, sprite.y)
-        #TODO: render cursor
