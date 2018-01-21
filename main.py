@@ -74,6 +74,12 @@ def main():
         print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
         gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
 
+
+    gameplay.state.fullHeart = graphics.view.sprite_factory.from_file("./assets/hearts.png").subsprite(
+        graphics.rect.Rect(0, 0, 300, 300))
+
+    gameplay.state.emptyHeart = graphics.view.sprite_factory.from_file("./assets/hearts.png").subsprite(
+        graphics.rect.Rect(600, 0, 300, 300))
     graphics.view.makeGameSubView()
 
     my_player = gameplay.state.players[gameplay.state.my_player_id]

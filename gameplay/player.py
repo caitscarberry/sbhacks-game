@@ -20,7 +20,7 @@ class Player(Entity):
                                            self, collision_type=physics.collision_types.player)
         self.collider.add_callback(self.onDoor)
         self.collider.add_callback(self.onEnemy)
-        self.MaxHealth = 500
+        self.maxHealth = 500
         self.currHealth = 500
         self.lastMeleeHit = 0
         self.width = 66
@@ -134,6 +134,14 @@ class Player(Entity):
         return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x),
                                             int(self.collider.pos.y))
 
+    def getHeartSprites(self):
+        hearts = []
+        for i in range(10):
+            if self.currHealth <= (self.maxHealth // 10 )* i:
+                hearts.append(graphics.view.SpriteToRender(gameplay.state.emptyHeart, 30 + 30*(i % 5), 30 + 30*(i // 5), 25, 25))
+            else:
+                hearts.append(graphics.view.SpriteToRender(gameplay.state.fullHeart, 30 + 30*(i % 5), 30 + 30*(i // 5), 25, 25))
+        return hearts
     def onEnemy(self, obj1, obj2):
         obj1 = obj1.owner
         obj2 = obj2.owner

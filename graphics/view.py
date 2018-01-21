@@ -53,8 +53,9 @@ def initGlobals():
 def makeGameSubView():
     global game_view
     game_view = GameView(SIDEBAR_WIDTH,0,GAME_WIDTH,WINDOW_SIZE[1])
+    gamebar_view = GameBarView(0,0,WINDOW_SIZE[0],WINDOW_SIZE[1])
     subviews.append(game_view)
-
+    subviews.append(gamebar_view)
 def render():
     raw_renderer.clear((0,0,0))
     for subview in subviews:
@@ -74,6 +75,16 @@ class SubView:
 
     """def renderSpriteCentered(sprite, x, y):
         sprite_renderer.draw_sprite(sprite, x + self.x, y + self.y)"""
+
+class GameBarView(SubView):
+    def __init__(self, x, y, height, width):
+        super().__init__(x, y, height, width)
+
+    def render(self):
+        sprites = gameplay.state.players[gameplay.state.my_player_id].getHeartSprites()
+        for sprite in sprites:
+            self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
+
 
 class GameView(SubView):
     def __init__(self, x, y, height, width):
