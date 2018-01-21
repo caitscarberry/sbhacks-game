@@ -12,7 +12,7 @@ import graphics.render
 import sys
 import socket
 from graphics.rect import Rect
-from gameplay.entity import Player
+from gameplay.player import Player
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
 from networking.messaging_handler import MessagingHandler
