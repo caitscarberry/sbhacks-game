@@ -186,7 +186,7 @@ class PhysObject:
             self.callbacks = callbacks
         self.collision = collision
         self.collision_type = collision_type
-        self.owner
+        self.owner = owner
 
     @property
     def aabb(self):

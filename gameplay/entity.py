@@ -40,7 +40,7 @@ class Entity:
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
-        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93),
+        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 40, 70),
                                            collision_type=physics.collision_types.dynamic)
         self.width = 66
         self.height = 93
@@ -97,7 +97,7 @@ class Player(Entity):
             direction_y = direction_y/length
             game_event_dict["direction_x"] = direction_x
             game_event_dict["direction_y"] = direction_y
-            print(game_event_dict)
+            #print(game_event_dict)
             return GameEvent(game_event_dict)
 
         game_event_dict["code"] = "NONE"
