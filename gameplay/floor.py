@@ -1,6 +1,7 @@
 from gameplay.map import getBoard
 from gameplay.entity import Entity #for ladder
 import random
+from gameplay.events import GameEvent
 
 class Floor:
     def __init__(self):
@@ -19,22 +20,35 @@ class Floor:
         self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(1) 
         self.genStartingLocs()
 
-    def toDict(self):
+    def to_dict(self):
         brd = [[None]*self.boardSize for _ in range(self.boardSize)]
         for i in range(self.boardSize):
             for j in range(self.boardSize):
-                brd[i][j] = self.board[i][j].toDict()
+                brd[i][j] = self.board[i][j].to_dict()
 
         dict = {"board": brd,
                 "startingLocs" : self.startingLocs}
         return dict
 
-    def fromDict(self, dict):
+    # NOTE: NOT STATIC METHOD
+    def from_dict(self, dict):
         self.startingLocs = dict["startingLocs"]
         for i in range(dict["board"]):
             for j in range(dict["board"][0]):
-                self.board[i][j] = dict["board"][i][j]
+                self.board[i][j].from_dict(dict["board"][i][j])
 
+    def get_update_event(self, room_x, room_y):
+        game_event_dict = {
+            "type": "STATUS",
+            "kind": "ROOM",
+            "room_x": room_x,
+            "room_y": room_y,
+            "room": self.board[room_x][room_y].to_dict()
+        }
+        return GameEvent(game_event_dict)
+
+    def handle_update_event(self, event):
+        self.board[event["room_x"]][event["room_y"]].from_dict(event["room"])
 
     def __str__(self):
         for i in range(self.boardSize):

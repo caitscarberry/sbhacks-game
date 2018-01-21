@@ -49,3 +49,6 @@ class MessagingHandler:
         for connection in self.connections:
             if connection is not None:
                 connection.send(msg)
+
+    def send_to(self, player_id, msg):
+        self.connections[player_id].send(msg)

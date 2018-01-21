@@ -75,9 +75,9 @@ class Vec2:
     def to_dict(self):
         return {"x": self.x, "y": self.y}
 
-    def from_dict(self, dictionary):
-        self.x = dictionary["x"]
-        self.y = dictionary["y"]
+    @staticmethod
+    def from_dict(dict):
+        return Vec2(dict["x"], dict["y"])
 
     
 class AABB:

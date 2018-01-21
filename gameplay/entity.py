@@ -86,6 +86,12 @@ class Door(Entity):
             return
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x),
                                             int(self.collider.pos.y), 64, 64)
+    def to_dict(self):
+        return {"dir": self.dir}
+
+    @staticmethod
+    def from_dict(dict):
+        return Door(dict["dir"])
 
 class Ladder(Entity):
     def _init__(self):
@@ -94,6 +100,8 @@ class Ladder(Entity):
         self.width = 64
         self.height = 64
         self.speed = 0
+
+
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
@@ -170,10 +178,10 @@ class Player(Entity):
     def processPlayerEvent(self, event):
         if event.params["player_id"] != self.id:
             return
-        self.collider.pos.from_dict(event.params["pos"])
+        self.collider.pos = Vec2.from_dict(event.params["pos"])
 
         if event.params["code"] == "CHANGE_VELOCITY":
-            self.collider.vel.from_dict(event.params["velocity"])
+            self.collider.vel = Vec2.from_dict(event.params["velocity"])
 
         elif (event.params["code"] == "SHOOT"):
             #each client is responsible for sending updates about its
