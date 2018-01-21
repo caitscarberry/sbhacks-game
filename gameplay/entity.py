@@ -157,8 +157,8 @@ class Player(Entity):
 
             vel = Vec2()
 
-            vel.x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
-            vel.y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
+            vel.x = state[sdl2.SDLK_d] - state[sdl2.SDLK_a]
+            vel.y = state[sdl2.SDLK_s] - state[sdl2.SDLK_w]
             if (vel.length() > 0):
                 vel = vel / vel.length()
 
