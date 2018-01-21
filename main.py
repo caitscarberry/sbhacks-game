@@ -45,7 +45,7 @@ def main():
     graphics.view.initView()
 
     gameplay.state.floor = Floor()
-    gameplay.state.floor.genFloor(3, 0)
+    gameplay.state.floor.genFloor(3, 3)
     gameplay.state.players = []
     for i in range(num_players):
         new_player = Player(i, 200 + 200 * i, 350)

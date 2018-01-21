@@ -98,18 +98,18 @@ def addDoors (board):
             if leftX < 0:
                 leftX = len(board) - 1
             if (board[leftX][roomY]):
-                door = Door(3)
+                door = Door(3,leftX,roomY, roomX, roomY)
                 board[roomX][roomY].collidable.append(door)
                 board[roomX][roomY].simulation.add_object(door.collider)
             if (board[rightX][roomY]):
-                door = Door(1)
+                door = Door(1,rightX,roomY, roomX, roomY)
                 board[roomX][roomY].collidable.append(door)
                 board[roomX][roomY].simulation.add_object(door.collider)
             if (board[roomX][upY]):
-                door = Door(0)
+                door = Door(0,roomX,upY, roomX, roomY)
                 board[roomX][roomY].collidable.append(door)
                 board[roomX][roomY].simulation.add_object(door.collider)
             if (board[roomX][downY]):
-                door = Door(2)
+                door = Door(2,roomX,downY, roomX, roomY)
                 board[roomX][roomY].collidable.append(door)
                 board[roomX][roomY].simulation.add_object(door.collider)

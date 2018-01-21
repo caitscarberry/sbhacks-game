@@ -38,7 +38,11 @@ class Entity:
         pass
 
 class Door(Entity):
-    def __init__(self, dir):
+    def __init__(self, dir, nextX, nextY, pastX, pastY):
+        self.toX = nextX
+        self.toY = nextY
+        self.fromX = pastX
+        self.fromY = pastY
         leftX = 32
         midX = graphics.view.GAME_WIDTH / 2
         rightX = graphics.view.GAME_WIDTH - 32
@@ -82,7 +86,6 @@ class Door(Entity):
             return
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x),
                                             int(self.collider.pos.y), 64, 64)
-
     def to_dict(self):
         return {"dir": self.dir}
 
@@ -90,11 +93,21 @@ class Door(Entity):
     def from_dict(dict):
         return Door(dict["dir"])
 
+class Ladder(Entity):
+    def _init__(self):
+        self.collider = None #set this
+        #dont forget callback
+        self.width = 64
+        self.height = 64
+        self.speed = 0
+
+
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
         self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 30, 45),
                                            self, collision_type=physics.collision_types.player)
+        self.collider.add_callback(self.onDoor)
         self.width = 66
         self.height = 93
         self.speed = 200
@@ -194,7 +207,21 @@ class Player(Entity):
                                             int(self.collider.pos.y))
 
     def onDoor(self, obj1, obj2):
-        pass
+        print("here")
+        obj1 = obj1.owner
+        obj2 = obj2.owner
+        if isinstance(obj1, Door):
+            gameplay.state.players[gameplay.state.my_player_id].roomX = obj1.toX
+            gameplay.state.players[gameplay.state.my_player_id].roomY = obj1.toY
+            gameplay.state.floor.board[obj1.fromX][obj1.fromY].simulation.remove_object(self.collider)
+            gameplay.state.floor.board[obj1.toX][obj1.toY].simulation.add_object(self.collider)
+            self.collider.pos = Vec2()
+        elif isinstance(obj2, Door):
+            gameplay.state.players[gameplay.state.my_player_id].roomX = obj2.toX
+            gameplay.state.players[gameplay.state.my_player_id].roomY = obj2.toY
+            gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
+            gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
+
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):

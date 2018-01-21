@@ -209,8 +209,7 @@ class Simulation:
     room_size = Vec2(60, 39)
     def __init__(self):
         self.objects = set()
-
-        
+        self.dirtyObj = []
 
     def step(self, dt):
         for obj in self.objects:
@@ -219,12 +218,15 @@ class Simulation:
             #print(obj.pos)
             if obj.collision_type != collision_types.static:
                 self.move_object(obj, distance)
-        
+        for x in self.dirtyObj:
+            self.objects.remove(x)
+        self.dirtyObj = []
+
     def add_object(self, obj):
         self.objects.add(obj)
 
     def remove_object(self, obj):
-        self.objects.remove(obj)
+        self.dirtyObj.append(obj)
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
