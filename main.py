@@ -51,11 +51,11 @@ def main():
     running = True
 
     graphics.view.initView()
-
+    gameplay.state.trapDoor = graphics.view.sprite_factory.from_file("./assets/trapdoor.png")
     gameplay.state.floor = Floor()
 
     if gameplay.state.my_player_id == 0:
-        gameplay.state.floor.genFloor(10, 30)
+        gameplay.state.floor.genFloor(3, 3)
         messaging.broadcast(gameplay.state.floor.serialize().encode("utf-8"))
     else:
         queue = messaging.get_messages()

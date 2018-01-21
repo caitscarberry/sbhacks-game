@@ -6,7 +6,7 @@ global doorR
 global doorB
 global doorT
 global fullHeart
-global trapdoor
+global trapDoor
 global responsible_for
 global global_queue
 global curr_id
