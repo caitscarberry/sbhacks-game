@@ -5,6 +5,7 @@ from gameplay.controls import ControlsState
 from graphics.rect import Rect
 import graphics.sprite
 import graphics.render
+import graphics.view
 
 
 class Entity:
@@ -50,14 +51,16 @@ class Player(Entity):
         self.roomX = -1
         self.roomY = -1
 
+        self.load_sprite()
+
     def setRoom(self, x, y):
         self.roomX = x
         self.roomY = y
 
-    def load_sprite(self, spritefac):
+    def load_sprite(self):
         self.sprites = []
         for i in range(0,4):
-            self.sprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100*i, 115*self.id, 66, 93))
+            self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100*i, 115*self.id, 66, 93))
             self.sprites.append(self.sprite)
 
     def processInputEvent(self, event: sdl2.SDL_Event):
@@ -107,10 +110,10 @@ class Player(Entity):
         bullet = Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
         self.next_bullet_id += 1
 
-    def render(self, renderer):
+    def getSprite(self):
         if (self.sprite == None):
             return
-        renderer.draw_sprite(self.sprites[self.directionFromVelocity()], int(self.x), int(self.y))
+        return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.x), int(self.y))
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction, player_id):

@@ -1,5 +1,5 @@
 import random
-
+import graphics.view
 class Room:
     def __init__(self):
         self.enemyDifficulties = [1,2,3,5,7]
@@ -84,3 +84,8 @@ class Room:
             else:
                 currentSum += self.enemyProbabilities[x]
         return chosenEnemy
+
+    def getSprites(self):
+        return([graphics.view.SpriteToRender(graphics.view.sprite_factory.from_file("./assets/dungeon.png"), 0, 0)])
+        
+

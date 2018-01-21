@@ -14,10 +14,14 @@ from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
 from networking.messaging_handler import MessagingHandler
 import graphics.view
+import gameplay.state
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
 GAME_WIDTH = 1000 - SIDEBAR_WIDTH
+
+def start_game():
+    graphics.views.makeGameView()
 
 def main():
     if len(sys.argv) < 3:
@@ -38,16 +42,15 @@ def main():
 
     graphics.view.initView()
 
+    graphics.view.makeGameSubView()
+
     running = True
 
     col = Color(123, 123, 123)
 
-    players = []
+    gameplay.state.players = []
     for i in range(num_players):
-        players.append(Player(i, 50*i, 50))
-
-    for player in players:
-        player.load_sprite(graphics.view.sprite_factory)
+        gameplay.state.players.append(Player(i, 50*i, 50))
 
     while running == True:
         input_events = sdl2.ext.get_events()
@@ -62,7 +65,7 @@ def main():
                 if not ControlsState.should_process_input_event(event):
                     continue
                 ControlsState.update_state(event)
-                player_event = players[my_player_id].processInputEvent(event)
+                player_event = gameplay.state.players[my_player_id].processInputEvent(event)
                 if player_event.params["code"] == "NONE":
                     continue
                 game_events.append(player_event)
@@ -74,15 +77,16 @@ def main():
 
         for event in game_events:
             if (event.params["type"] == "PLAYER"):
-                players[event.params["player_id"]].processPlayerEvent(event)
-        for player in players:
+                gameplay.state.players[event.params["player_id"]].processPlayerEvent(event)
+        for player in gameplay.state.players:
             player.update()
 
-        graphics.view.raw_renderer.clear(col)
+        """graphics.view.raw_renderer.clear(col)
         for player in players:
             player.render(graphics.view.sprite_renderer)
         graphics.view.raw_renderer.present()
-        graphics.view.window.refresh()
+        graphics.view.window.refresh()"""
+        graphics.view.render()
         sdl2.SDL_Delay(16)
 
 
