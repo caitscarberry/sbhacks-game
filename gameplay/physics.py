@@ -159,6 +159,8 @@ class Polygon:
             
     @staticmethod
     def square(x, y, w, h):
+        x = x - w / 2
+        y = y - h / 2
         axes = [Vec2(x, y), Vec2(x + w, y), Vec2(x + w, y + h), Vec2(x, y + h)]
         return Polygon(axes)
 
@@ -204,8 +206,10 @@ class PhysObject:
         self.callbacks.append(callback)
 
 class Simulation:
+    room_size = Vec2(60, 39)
     def __init__(self):
         self.objects = set()
+
         
 
     def step(self, dt):
@@ -245,7 +249,7 @@ class Simulation:
                     cb(obj, key)
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
-                if key.collision_type != collision_types.trigger or \
+                if key.collision_type != collision_types.trigger and \
                    not obj.collision_type == key.collision_type == collision_types.player:
                     obj.collision.move(-minvec)
                 #sys.exit(0)

@@ -83,7 +83,7 @@ class Player(Entity):
                                            self, collision_type=physics.collision_types.player)
         self.width = 66
         self.height = 93
-        self.speed = 100
+        self.speed = 200
         self.id = player_id
         self.next_bullet_id = 0
         self.sprite = None
@@ -118,10 +118,8 @@ class Player(Entity):
 
             vel.x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
             vel.y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
-            print(vel)
             if (vel.length() > 0):
                 vel = vel / vel.length()
-            print(vel)
 
             vel = vel * self.speed
 
@@ -156,8 +154,6 @@ class Player(Entity):
         self.collider.pos.from_dict(event.params["pos"])
 
         if event.params["code"] == "CHANGE_VELOCITY":
-            print("new velocity:")
-            print(self.collider.vel)
             self.collider.vel.from_dict(event.params["velocity"])
 
         elif (event.params["code"] == "SHOOT"):
@@ -175,7 +171,7 @@ class Player(Entity):
         #this ensures that bullet ids are globally unique
         bullet = Bullet(str(self.id) + "_" + str(self.next_bullet_id), self.collider.pos.x, self.collider.pos.y, direction_x, direction_y, self.id)
         self.next_bullet_id += 1
-        print("x: %d, y: %d" % (self.roomX, self.roomY))
+        #print("x: %d, y: %d" % (self.roomX, self.roomY))
 
     def getSprite(self):
         if (self.sprite == None):
@@ -197,7 +193,9 @@ class Bullet(Entity):
         roomy = gameplay.state.players[player_id].roomY
         room = gameplay.state.floor.board[roomx][roomy]
         room.simulation.add_object(self.collider)
-        room.projectiles.append(self)
+        room.projectiles[self.id] = self
+        if player_id == gameplay.state.my_player_id:
+            gameplay.state.responsible_for.append(self.id)
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()

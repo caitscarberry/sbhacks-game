@@ -1,25 +1,50 @@
 import random
 from graphics.sprite_to_render import SpriteToRender
 import graphics.view
-from gameplay.physics import Simulation
+from gameplay.physics import Simulation, PhysObject, Polygon, Vec2
+from gameplay.monster import Monster
+
 
 class Room:
     def __init__(self):
-        self.enemyDifficulties = [1,2,3,5,7]
-        self.enemyProbabilities = [7,6,8,5,4]
-        #following probabilities given as a percentage out of 100 (0-99)
+        self.enemyDifficulties = [1, 2, 3, 5, 7]
+        self.enemyProbabilities = [7, 6, 8, 5, 4]
+        # following probabilities given as a percentage out of 100 (0-99)
         self.probOfEnemies = 75
         self.probOfSameEnemies = 50
         self.minDifficulty = 3
         self.maxDifficulty = 17
         self.maxEnemies = 5
         self.enemies = []
-        self.projectiles = []
+        self.projectiles = {}
         self.collidable = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
-        self.simulation = Simulation()
+        self.background.rect.x
+        self.background.rect.y
 
+        self.simulation = Simulation()
+        self.make_walls()
         self.generateEnemies()
+
+    def make_walls(self):
+        thickness = 64
+        width = 1000 - 188
+        height = 650
+        x, y = width // 2, 32
+        rect = Polygon.square(x, y, width - 100, 32)
+        self.simulation.add_object(PhysObject(Vec2(x, y), rect, None))
+
+        y = height - 32
+        rect = Polygon.square(x, y, width - 100, 32)
+        self.simulation.add_object(PhysObject(rect.pos, rect, None))
+
+        x, y = 32, height // 2
+        rect = Polygon.square(x, y, 32, height - 100)
+        self.simulation.add_object(PhysObject(rect.pos, rect, None))
+
+        x = width - 32
+        rect = Polygon.square(x, y, 32, height - 100)
+        self.simulation.add_object(PhysObject(rect.pos, rect, None))
 
     def toDict(self):
         enemiesList = []
@@ -56,24 +81,27 @@ class Room:
         return str(self.enemies)
 
     def generateEnemies(self):
-        if random.randrange(0,100) < self.probOfEnemies: #there are enemies
+        for i in range(random.randrange(1, 3)):
+            self.enemies.append(Monster(0, 500, 500))
+        return
+
+        if random.randrange(0, 100) < self.probOfEnemies:  # there are enemies
             roomDifficulty = random.randrange(self.minDifficulty, self.maxDifficulty + 1)
-            if random.randrange(0, 100) < self.probOfSameEnemies: #same enemies
+            if random.randrange(0, 100) < self.probOfSameEnemies:  # same enemies
                 enemy = self.chooseEnemy()
                 currDifficulty = 0
                 while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty \
                         and len(self.enemies) <= self.maxEnemies:
                     currDifficulty += self.enemyDifficulties[enemy]
-                    self.enemies.append(enemy) #make sure that if you change this to an object you gen a new one
-            else: #different enemies
+                    self.enemies.append(enemy)  # make sure that if you change this to an object you gen a new one
+            else:  # different enemies
                 enemy = self.chooseEnemy()
                 currDifficulty = 0
-                while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty\
+                while currDifficulty + self.enemyDifficulties[enemy] < roomDifficulty \
                         and len(self.enemies) <= self.maxEnemies:
                     self.enemies.append(enemy)
                     currDifficulty += self.enemyDifficulties[enemy]
                     enemy = self.chooseEnemy()
-
 
     def chooseEnemy(self):
         totalProbVals = 0
@@ -91,9 +119,10 @@ class Room:
         return chosenEnemy
 
     def getSprites(self):
-        sprites = [graphics.view.SpriteToRender(self.background, 0, 0)]
+        sprites = [
+            graphics.view.SpriteToRender(self.background, self.background.rect.x + self.background.rect.width / 2,
+                                         self.background.rect.y + self.background.rect.height / 2,
+                                         graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
         sprites = sprites + [x.getSprite() for x in self.projectiles]
         sprites = sprites + [x.getSprite() for x in self.collidable]
         return sprites
-        
-

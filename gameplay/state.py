@@ -6,3 +6,5 @@ global doorL
 global doorR
 global doorB
 global doorT
+global responsible_for
+responsible_for = []

@@ -11,10 +11,3 @@ def init_window():
 
 
 
-def get_screensize():
-    dm = ctypes.pointer(sdl2.SDL_DisplayMode())
-    sdl2.SDL_GetCurrentDisplayMode(0, dm)
-    dm = dm.contents
-    width = dm.w
-    height = dm.h
-    return width, height
