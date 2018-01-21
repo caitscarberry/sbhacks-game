@@ -65,7 +65,7 @@ class Floor:
         return GameEvent(game_event_dict)
 
     def handle_update_event(self, event):
-        self.board[event["room_x"]][event["room_y"]].from_dict(event["room"])
+        self.board[event.params["room_x"]][event.params["room_y"]].from_dict(event.params["room"])
 
     def __str__(self):
         for i in range(self.boardSize):

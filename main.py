@@ -24,9 +24,11 @@ from queue import Queue
 
 FRAME_LENGTH = 17
 
+
 def nearby(player):
     localp = gameplay.state.players[gameplay.state.my_player_id]
     return abs(localp.roomX - player.roomX) + abs(localp.roomY - player.roomY) <= 1
+
 
 def main():
     if len(sys.argv) < 3:
@@ -70,11 +72,11 @@ def main():
         new_player.roomY = gameplay.state.floor.startingLocs[i][1]
         print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
         gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
-    
+
     graphics.view.makeGameSubView()
 
     my_player = gameplay.state.players[gameplay.state.my_player_id]
-    
+
     last_phys_time = sdl2.SDL_GetTicks()
     while running == True:
         frame_start = sdl2.SDL_GetTicks()
@@ -105,7 +107,7 @@ def main():
             if (event.params["type"] == "PLAYER"):
                 gameplay.state.players[event.params["player_id"]].processPlayerEvent(event)
             if (event.params["type"] == "STATUS"):
-                if(event.params["kind"] == "ROOM"):
+                if (event.params["kind"] == "ROOM"):
                     gameplay.state.floor.handle_update_event(event)
 
         for enemy in gameplay.state.floor.board[my_player.roomX][my_player.roomY].enemies:
@@ -116,11 +118,12 @@ def main():
             if nearby(player):
                 nearby_ps.append(player.id)
 
+        monster_update = gameplay.state.floor.get_update_event(my_player.roomX, my_player.roomY)
+        monster_update_str = monster_update.serialize().encode("utf-8")
         if nearby_ps[0] == gameplay.state.my_player_id and len(nearby_ps) > 1:
             for p in nearby_ps:
-                update_str = gameplay.state.floor.get_update_event(my_player.roomX, my_player.roomY).serialize().encode("utf-8")
                 if nearby_ps[p] != gameplay.state.my_player_id:
-                    messaging.send_to(p, update_str)
+                    messaging.send_to(p, monster_update_str)
 
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
@@ -129,7 +132,11 @@ def main():
         gameplay.state.global_queue = Queue()
         gameplay.state.floor.board[my_player.roomX][my_player.roomY].simulation.step(delta / 1000)
         while not gameplay.state.global_queue.empty():
-            messaging.broadcast(gameplay.state.global_queue.get().serialize().encode("utf-8"))
+            update_dict = gameplay.state.global_queue.get()
+            messaging.broadcast(update_dict.serialize().encode("utf-8"))
+            if update_dict.params["player_id"] == gameplay.state.my_player_id and \
+                    update_dict.params["code"] == "CHANGE_ROOM":
+                messaging.broadcast(monster_update_str)
 
         for player in gameplay.state.players:
             if player.id != gameplay.state.my_player_id:
@@ -155,6 +162,3 @@ if __name__ == "__main__":
         print(e)
     finally:
         sdl2.ext.quit()
-
-
-
