@@ -8,30 +8,40 @@ from gameplay.controls import ControlsState
 import graphics.sprite
 import graphics.render
 import graphics.view
+import random
 
 
 class Monster(Entity):
-    def __init__(self, monster_id, x, y):
+    def __init__(self, monster_id, x, y, type):
         self.id = monster_id
-        self.width = 33
-        self.height = 25
+        self.type = type
+        self.width = 40
+        self.height = 40
         self.speed = 50
         self.next_bullet_id = 0
-        self.sprite = None
+        self.sprites = []
         self.load_sprite()
         self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, self.width, self.height),
                                            self, collision_type=physics.collision_types.dynamic)
 
     def load_sprite(self):
-        self.sprites = []
-        for i in range(0, 4):
-            if i == 3 or i == 0:
-                self.sprite = graphics.view.sprite_factory.from_file("./assets/sheet_snake_walk.png").subsprite(
-                    graphics.rect.Rect(6 * 64, 32, 64, 32))
-            else:
-                self.sprite = graphics.view.sprite_factory.from_file("./assets/sheet_snake_walk_flip.png").subsprite(
-                    graphics.rect.Rect(0, 32, 64, 32))
-            self.sprites.append(self.sprite)
+        sprite1 = None
+        sprite2 = None
+        if self.type == 0:
+            sprite1 = graphics.view.sprite_factory.from_file("./assets/sheet_snake_walk.png").subsprite(
+                graphics.rect.Rect(6 * 64, 32, 64, 32))
+            sprite2 = graphics.view.sprite_factory.from_file("./assets/sheet_snake_walk_flip.png").subsprite(
+                graphics.rect.Rect(0, 32, 64, 32))
+        elif self.type == 1:
+            sprite1 = graphics.view.sprite_factory.from_file("./assets/snail.png").subsprite(
+                graphics.rect.Rect(0, 0, 213, 218))
+            sprite2 = graphics.view.sprite_factory.from_file("./assets/snail_flip.png").subsprite(
+                graphics.rect.Rect(0, 0, 213, 218))
+
+        self.sprites.append(sprite1)
+        self.sprites.append(sprite2)
+        self.sprites.append(sprite2)
+        self.sprites.append(sprite1)
 
     def chooseNewDirection(self, players, room_x, room_y):
         game_event_dict = {
@@ -57,17 +67,21 @@ class Monster(Entity):
         self.collider.vel = vel * self.speed
 
     def getSprite(self):
-        if (self.sprite == None):
-            return
-        return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x),
-                                            int(self.collider.pos.y))
+        sprite = None
+        if self.type == 0:
+            sprite = graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x),
+                                                  int(self.collider.pos.y), 64, 32)
+        elif self.type == 1:
+            sprite = graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x),
+                                                  int(self.collider.pos.y), 64, 64)
+        return sprite
 
     def to_dict(self):
-        return {"pos": self.collider.pos.to_dict(), "vel": self.collider.vel.to_dict(), "id": self.id}
+        return {"pos": self.collider.pos.to_dict(), "vel": self.collider.vel.to_dict(), "id": self.id, "type": self.type}
 
     @staticmethod
     def from_dict(dict):
         pos = Vec2.from_dict(dict["pos"])
-        m = Monster(dict["id"], pos.x, pos.y)
+        m = Monster(dict["id"], pos.x, pos.y, dict["type"])
         m.collider.vel = Vec2.from_dict(dict["vel"])
         return m
