@@ -89,7 +89,7 @@ class Room:
         return str(self.enemies)
 
     def generateEnemies(self):
-        for i in range(random.randrange(1, 3)):
+        for i in range(random.randrange(3, 11)):
             gameplay.state.curr_id += 1
             monster = Monster(gameplay.state.curr_id, random.randrange(200, 500), random.randrange(200, 500), random.randrange(0, 2))
             self.enemies.append(monster)
