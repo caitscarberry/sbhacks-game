@@ -97,20 +97,34 @@ class Door(Entity):
 class Ladder(Entity):
     def __init__(self):
         self.collider = None #set this
-        #dont forget callback
         self.width = 64
         self.height = 64
         self.speed = 0
+        self.sprite = None
+        self.loadSprite()
+
+    def loadSprite(self):
+        self.sprite = gameplay.state.trapDoor
+
     def getSprite(self):
-        return None
+        if (self.sprite == None):
+            return
+        return graphics.view.SpriteToRender(self.sprite, 300, 400, 64, 64)
+
+    def to_dict(self):
+        return {
+
+        }
+
+    def from_dict(self, dict):
+        self.loadSprite()
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
-        print("shooting")
         self.direction_x = direction_x
         self.direction_y = direction_y
         self.id = bullet_id
-        self.speed = 80
+        self.speed = 160
         self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 10, 10), self, collision_type=physics.collision_types.player)
         self.collider.add_callback(self.onCollide)
         roomx = gameplay.state.players[player_id].roomX
@@ -127,12 +141,26 @@ class Bullet(Entity):
             gameplay.state.my_projectiles.append((roomx, roomy, self.id))
 
     def load_sprite(self):
-        self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100, 115, 66, 93))
+        self.sprites = []
+        for i in range(4):
+            if i % 2 == 0:
+                self.sprites.append(
+                    graphics.view.sprite_factory.from_file("./assets/tomato" + str(i) + ".png").subsprite(
+                        graphics.rect.Rect(0, 0, 112, 129)))
+            else:
+                self.sprites.append(
+                    graphics.view.sprite_factory.from_file("./assets/tomato" + str(i) + ".png").subsprite(
+                        graphics.rect.Rect(0, 0, 129, 112)))
 
     def getSprite(self):
-        if (self.sprite == None):
-            return
-        return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x), int(self.collider.pos.y))
+        res = ((gameplay.state.frame // 20) + int(self.id[-1])) % 4
+        if res  % 2 == 0:
+            return graphics.view.SpriteToRender(self.sprites[res], int(self.collider.pos.x), int(self.collider.pos.y),
+                                                int(112 / 4), int(129 / 4))
+        else:
+            return graphics.view.SpriteToRender(self.sprites[res], int(self.collider.pos.x), int(self.collider.pos.y),
+                                                int(129 / 4), int(112 / 4))
+
 
     def onCollide(self, collider: physics.PhysObject, other: physics.PhysObject):
         if other.collision_type == physics.collision_types.static or \
