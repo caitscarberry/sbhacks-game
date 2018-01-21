@@ -8,6 +8,7 @@ global doorT
 global fullHeart
 global trapdoor
 global my_projectiles
+global responsible_for
 global global_queue
 global curr_id
 my_projectiles = []

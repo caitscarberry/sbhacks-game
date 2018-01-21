@@ -97,12 +97,27 @@ class Door(Entity):
 class Ladder(Entity):
     def __init__(self):
         self.collider = None #set this
-        #dont forget callback
         self.width = 64
         self.height = 64
         self.speed = 0
+        self.sprite = None
+        self.loadSprite()
+
+    def loadSprite(self):
+        self.sprite = gameplay.state.trapDoor
+
     def getSprite(self):
-        return None
+        if (self.sprite == None):
+            return
+        return graphics.view.SpriteToRender(self.sprite, 300, 400, 64, 64)
+
+    def to_dict(self):
+        return {
+
+        }
+
+    def from_dict(self, dict):
+        self.loadSprite()
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
