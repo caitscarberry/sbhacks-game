@@ -88,8 +88,9 @@ class GameView(SubView):
         for sprite in sprites:
             self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
         for player in gameplay.state.players:
-            sprite = player.getSprite()
-            self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
+            if player.roomX == roomX and player.roomY == roomY:
+                sprite = player.getSprite()
+                self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
         for enemy in gameplay.state.floor.board[roomX][roomY].enemies:
             if not isinstance(enemy, int):
                 sprite = enemy.getSprite()
