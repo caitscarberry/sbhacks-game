@@ -1,4 +1,5 @@
 import random
+from graphics.sprite_to_render import SpriteToRender
 import graphics.view
 class Room:
     def __init__(self):
@@ -13,6 +14,7 @@ class Room:
         self.enemies = []
         self.projectiles = []
         self.collidable = []
+        self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
 
         self.generateEnemies()
 
@@ -86,6 +88,6 @@ class Room:
         return chosenEnemy
 
     def getSprites(self):
-        return([graphics.view.SpriteToRender(graphics.view.sprite_factory.from_file("./assets/dungeon.png"), 0, 0)])
+        return([graphics.view.SpriteToRender(self.background, 0, 0)])
         
 
