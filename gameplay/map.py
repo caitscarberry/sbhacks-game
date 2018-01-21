@@ -83,6 +83,8 @@ def genBoard (board, roomLocs, boardSize):
 def addDoors (board):
     for roomX in range(len(board)):
         for roomY in range(len(board)):
+            if board[roomX][roomY] is None:
+                continue
             upY = roomY - 1
             if upY < 0:
                 upY = len(board) - 1
@@ -96,10 +98,18 @@ def addDoors (board):
             if leftX < 0:
                 leftX = len(board) - 1
             if (board[leftX][roomY]):
-                board[roomX][roomY].collidable.append(Door(3))
+                door = Door(3)
+                board[roomX][roomY].collidable.append(door)
+                board[roomX][roomY].simulation.add_object(door.collider)
             if (board[rightX][roomY]):
-                board[roomX][roomY].collidable.append(Door(1))
+                door = Door(1)
+                board[roomX][roomY].collidable.append(door)
+                board[roomX][roomY].simulation.add_object(door.collider)
             if (board[roomX][upY]):
-                board[roomX][roomY].collidable.append(Door(0))
+                door = Door(0)
+                board[roomX][roomY].collidable.append(door)
+                board[roomX][roomY].simulation.add_object(door.collider)
             if (board[roomX][downY]):
-                board[roomX][roomY].collidable.append(Door(2))
+                door = Door(2)
+                board[roomX][roomY].collidable.append(door)
+                board[roomX][roomY].simulation.add_object(door.collider)
