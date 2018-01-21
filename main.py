@@ -78,6 +78,7 @@ def main():
 
     my_player = gameplay.state.players[gameplay.state.my_player_id]
 
+    frame = 0
     last_phys_time = sdl2.SDL_GetTicks()
     while running == True:
         frame_start = sdl2.SDL_GetTicks()
@@ -122,9 +123,10 @@ def main():
         monster_update = gameplay.state.floor.get_update_event(my_player.roomX, my_player.roomY)
         monster_update_str = monster_update.serialize().encode("utf-8")
         if nearby_ps[0] == gameplay.state.my_player_id and len(nearby_ps) > 1:
-            for p in nearby_ps:
-                if nearby_ps[p] != gameplay.state.my_player_id:
-                    messaging.send_to(p, monster_update_str)
+            if frame % 30 == 0
+                for p in nearby_ps:
+                    if nearby_ps[p] != gameplay.state.my_player_id:
+                        messaging.send_to(p, monster_update_str)
 
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
@@ -150,6 +152,7 @@ def main():
         remaining_time = (frame_start + FRAME_LENGTH) - frame_end
         if remaining_time > 0:
             sdl2.SDL_Delay(remaining_time)
+        frame += 1
 
     sdl2.ext.quit()
 
