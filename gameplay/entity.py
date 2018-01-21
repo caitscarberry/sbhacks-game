@@ -250,7 +250,7 @@ class Player(Entity):
             "code": "CHANGE_ROOM",
             "player_id": self.id,
             "pos": self.collider.pos.to_dict(),
-            "vel": self.collider.vel.to_dict(),
+            "velocity": self.collider.vel.to_dict(),
             "room_x": self.roomX,
             "room_y": self.roomY
         }
