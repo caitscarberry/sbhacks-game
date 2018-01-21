@@ -4,6 +4,7 @@ import ctypes
 from graphics.render import SpriteRenderer
 from graphics.sprite import SpriteFactory
 import gameplay.state
+import graphics.view
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -35,8 +36,19 @@ def initRenderers():
 def initView():
     initWindow()
     initRenderers()
+    initGlobals()
     global subviews
     subviews = []
+
+def initGlobals():
+    gameplay.state.doorR = graphics.view.sprite_factory.from_file("./assets/door_open_r.png").subsprite(
+                graphics.rect.Rect(0, 0, 188, 202))
+    gameplay.state.doorL = graphics.view.sprite_factory.from_file("./assets/door_open_l.png").subsprite(
+        graphics.rect.Rect(0, 0, 188, 202))
+    gameplay.state.doorT = graphics.view.sprite_factory.from_file("./assets/door_open_t.png").subsprite(
+        graphics.rect.Rect(0, 0, 202, 188))
+    gameplay.state.doorB = graphics.view.sprite_factory.from_file("./assets/door_open_b.png").subsprite(
+        graphics.rect.Rect(0, 0, 202, 188))
 
 def makeGameSubView():
     global game_view
