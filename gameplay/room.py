@@ -70,9 +70,7 @@ class Room:
     def from_dict(self, dict):
         self.enemies = []
         self.projectiles = []
-        self.collidable = []
 
-        self.enemies = []
         for i in dict["enemies"]:
             self.enemies.append(Monster.from_dict(i))
         for i in dict["projectiles"]:

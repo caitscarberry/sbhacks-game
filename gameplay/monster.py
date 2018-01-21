@@ -33,7 +33,7 @@ class Monster(Entity):
                     graphics.rect.Rect(0, 32, 64, 32))
             self.sprites.append(self.sprite)
 
-    def chooseNewDirection(self, players):
+    def chooseNewDirection(self, players, room_x, room_y):
         game_event_dict = {
             "type": "MONSTER",
             "monster_id": self.id,
@@ -42,23 +42,19 @@ class Monster(Entity):
         min_ind = -1
         min_dist = 10000
         for p in range(len(players)):
+            if players[p].roomX != room_x or players[p].roomY != room_y:
+                continue
             dist = (players[p].collider.pos - self.collider.pos).length()
             if dist < min_dist:
                 min_dist = dist
                 min_ind = p
 
         if min_ind == -1:
-            game_event_dict["code"] = "NONE"
-            return GameEvent(game_event_dict)
+            return
 
         vel = (players[min_ind].collider.pos - self.collider.pos) / min_dist
 
         self.collider.vel = vel * self.speed
-
-        game_event_dict["code"] = "CHANGE_VELOCITY"
-        game_event_dict["velocity"] = self.collider.vel.to_dict()
-
-        return GameEvent(game_event_dict)
 
     def getSprite(self):
         if (self.sprite == None):

@@ -24,6 +24,10 @@ from queue import Queue
 
 FRAME_LENGTH = 17
 
+def nearby(player):
+    localp = gameplay.state.players[gameplay.state.my_player_id]
+    return abs(localp.roomX - player.roomX) + abs(localp.roomY - player.roomY) <= 1
+
 def main():
     if len(sys.argv) < 3:
         print("Please provide player file name and player id")
@@ -103,6 +107,20 @@ def main():
             if (event.params["type"] == "STATUS"):
                 if(event.params["kind"] == "ROOM"):
                     gameplay.state.floor.handle_update_event(event)
+
+        for enemy in gameplay.state.floor.board[my_player.roomX][my_player.roomY].enemies:
+            enemy.chooseNewDirection(gameplay.state.players, my_player.roomX, my_player.roomY)
+
+        nearby_ps = []
+        for player in gameplay.state.players:
+            if nearby(player):
+                nearby_ps.append(player.id)
+
+        if nearby_ps[0] == gameplay.state.my_player_id and len(nearby_ps) > 1:
+            for p in nearby_ps:
+                update_str = gameplay.state.floor.get_update_event(my_player.roomX, my_player.roomY).serialize().encode("utf-8")
+                if nearby_ps[p] != gameplay.state.my_player_id:
+                    messaging.send_to(p, update_str)
 
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
