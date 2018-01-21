@@ -124,8 +124,9 @@ class Ladder(Entity):
 
         }
 
-    def from_dict(self, dict):
-        self.loadSprite()
+    @staticmethod
+    def from_dict(dict):
+        return Ladder()
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y):
