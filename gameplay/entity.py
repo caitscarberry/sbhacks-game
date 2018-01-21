@@ -125,9 +125,16 @@ class Player(Entity):
         self.roomY = -1
         self.load_sprite()
 
-    def setRoom(self, x, y):
-        self.roomX = x
-        self.roomY = y
+    def setRoom(self, newX, newY):
+        if self.id != gameplay.state.my_player_id:
+            if newX != self.roomX or newY != self.roomY:
+                gameplay.state.floor.board[self.roomX][self.roomY].simulation.remove_object(self.collider)
+                local_player = gameplay.state.players[gameplay.state.my_player_id]
+                if newX == local_player.roomX and newY == local_player.roomY:
+                    gameplay.state.floor.board[newX][newY].simulation.add_object(self.collider)
+
+        self.roomX = newX
+        self.roomY = newY
 
     def load_sprite(self):
         self.sprites = []
@@ -190,6 +197,10 @@ class Player(Entity):
         if event.params["code"] == "CHANGE_VELOCITY":
             self.collider.vel = Vec2.from_dict(event.params["velocity"])
 
+        elif event.params["code"] == "CHANGE_ROOM":
+            self.collider.vel = Vec2.from_dict(event.params["velocity"])
+            self.setRoom(event.params["room_x"], event.params["room_y"])
+
         elif (event.params["code"] == "SHOOT"):
             #each client is responsible for sending updates about its
             #player's bullets (and ONLY its player's bullets)
@@ -217,21 +228,33 @@ class Player(Entity):
         obj1 = obj1.owner
         obj2 = obj2.owner
         if isinstance(obj1, Door):
-            if obj2.id != gameplay.state.my_player_id:
-                return
-            gameplay.state.players[gameplay.state.my_player_id].roomX = obj1.toX
-            gameplay.state.players[gameplay.state.my_player_id].roomY = obj1.toY
-            gameplay.state.floor.board[obj1.fromX][obj1.fromY].simulation.remove_object(self.collider)
-            gameplay.state.floor.board[obj1.toX][obj1.toY].simulation.add_object(self.collider)
-            self.collider.pos = Vec2(500,300)
-        elif isinstance(obj2, Door):
-            if obj1.id != gameplay.state.my_player_id:
-                return
-            gameplay.state.players[gameplay.state.my_player_id].roomX = obj2.toX
-            gameplay.state.players[gameplay.state.my_player_id].roomY = obj2.toY
-            gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
-            gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
-            self.collider.pos = Vec2(500,300)
+            foo = obj1
+            obj1 = obj2
+            obj2 = foo
+
+        if obj1.id != gameplay.state.my_player_id:
+            return
+        gameplay.state.players[gameplay.state.my_player_id].setRoom(obj2.toX, obj2.toY)
+        gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
+        gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
+        self.collider.pos = Vec2(500,300)
+
+        for collider in gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.objects:
+            if isinstance(collider.owner, Player):
+                gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(collider)
+
+        game_event_dict = {
+            "type": "PLAYER",
+            "code": "CHANGE_ROOM",
+            "player_id": self.id,
+            "pos": self.collider.pos.to_dict(),
+            "vel": self.collider.vel.to_dict(),
+            "room_x": self.roomX,
+            "room_y": self.roomY
+        }
+
+        event = GameEvent(game_event_dict)
+        gameplay.state.global_queue.add(event)
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y):

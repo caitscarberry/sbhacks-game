@@ -7,4 +7,5 @@ global doorR
 global doorB
 global doorT
 global responsible_for
+global global_queue
 responsible_for = []
