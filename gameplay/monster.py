@@ -14,8 +14,8 @@ class Monster(Entity):
     def __init__(self, monster_id, x, y):
         self.id = monster_id
         self.width = 66
-        self.height = 93
-        self.speed = 100
+        self.height = 50
+        self.speed = 50
         self.next_bullet_id = 0
         self.sprite = None
         self.load_sprite()
@@ -25,8 +25,12 @@ class Monster(Entity):
     def load_sprite(self):
         self.sprites = []
         for i in range(0, 4):
-            self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(
-                graphics.rect.Rect(100 * i, 115 * self.id, 66, 93))
+            if i == 3 or i == 0:
+                self.sprite = graphics.view.sprite_factory.from_file("./assets/sheet_snake_walk.png").subsprite(
+                    graphics.rect.Rect(6 * 64, 32, 64, 32))
+            else:
+                self.sprite = graphics.view.sprite_factory.from_file("./assets/sheet_snake_walk_flip.png").subsprite(
+                    graphics.rect.Rect(0, 32, 64, 32))
             self.sprites.append(self.sprite)
 
     def chooseNewDirection(self, players):
@@ -49,8 +53,7 @@ class Monster(Entity):
 
         vel = (players[min_ind].collider.pos - self.collider.pos) / min_dist
 
-        self.collider.vel.x = self.speed * vel.x
-        self.collider.vel.y = self.speed * vel.y
+        self.collider.vel = vel * self.speed
 
         game_event_dict["code"] = "CHANGE_VELOCITY"
         game_event_dict["velocity"] = self.collider.vel.to_dict()

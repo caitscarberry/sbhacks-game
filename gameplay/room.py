@@ -2,6 +2,7 @@ import random
 from graphics.sprite_to_render import SpriteToRender
 import graphics.view
 from gameplay.physics import Simulation, PhysObject, Polygon, Vec2
+from gameplay.monster import Monster
 
 class Room:
     def __init__(self):
@@ -81,6 +82,10 @@ class Room:
         return str(self.enemies)
 
     def generateEnemies(self):
+        for i in range(random.randrange(1, 3)):
+            self.enemies.append(Monster(0, 500, 500))
+        return
+
         if random.randrange(0,100) < self.probOfEnemies: #there are enemies
             roomDifficulty = random.randrange(self.minDifficulty, self.maxDifficulty + 1)
             if random.randrange(0, 100) < self.probOfSameEnemies: #same enemies
