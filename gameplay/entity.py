@@ -203,7 +203,8 @@ class Bullet(Entity):
         self.speed = 80
         #the player that fired this bullet
         self.player_id = player_id
-        self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 5, 5), self, collision_type=physics.collision_types.player)
+        self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 10, 10), self, collision_type=physics.collision_types.player)
+        self.collider.add_callback(self.onCollide)
         roomx = gameplay.state.players[player_id].roomX
         roomy = gameplay.state.players[player_id].roomY
         room = gameplay.state.floor.board[roomx][roomy]
@@ -214,6 +215,7 @@ class Bullet(Entity):
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()
+        self.alive = True
 
     def load_sprite(self):
         self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100, 115, 66, 93))
@@ -222,3 +224,10 @@ class Bullet(Entity):
         if (self.sprite == None):
             return
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x), int(self.collider.pos.y))
+
+    def onCollide(self, collider: physics.PhysObject, other: physics.PhysObject):
+        if collider.collision_type == physics.collision_types.static or \
+           collider.collision_type == physics.collision_types.dynamic or \
+           other.collision_type == physics.collision_types.static or \
+           other.collision_type == physics.collision_types.dynamic:
+            self.alive = False

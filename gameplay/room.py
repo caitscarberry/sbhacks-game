@@ -107,6 +107,16 @@ class Room:
                     currDifficulty += self.enemyDifficulties[enemy]
                     enemy = self.chooseEnemy()
 
+
+    def cleanup(self):
+        dead = []
+        for key, value in self.projectiles.items():
+            if not value.alive:
+                dead.append(key)
+                self.simulation.remove_object(value.collider)
+        for key in dead:
+            del self.projectiles[key]
+        
     def chooseEnemy(self):
         totalProbVals = 0
         for x in range(len(self.enemyProbabilities)):
@@ -127,6 +137,6 @@ class Room:
             graphics.view.SpriteToRender(self.background, self.background.rect.x + self.background.rect.width / 2,
                                          self.background.rect.y + self.background.rect.height / 2,
                                          graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
-        sprites = sprites + [x.getSprite() for x in self.projectiles]
+        sprites = sprites + [x.getSprite() for x in self.projectiles.values()]
         sprites = sprites + [x.getSprite() for x in self.collidable]
         return sprites

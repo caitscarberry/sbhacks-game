@@ -222,6 +222,9 @@ class Simulation:
         
     def add_object(self, obj):
         self.objects.add(obj)
+
+    def remove_object(self, obj):
+        self.objects.remove(obj)
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
@@ -249,9 +252,10 @@ class Simulation:
                     cb(obj, key)
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
-                if key.collision_type != collision_types.trigger and \
-                   not obj.collision_type == key.collision_type == collision_types.player:
-                    obj.collision.move(-minvec)
+                if key.collision_type == collision_types.trigger or \
+                   obj.collision_type == key.collision_type == collision_types.player:
+                    continue
+                obj.collision.move(-minvec)
                 #sys.exit(0)
                 return
         
