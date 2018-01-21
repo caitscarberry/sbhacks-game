@@ -14,15 +14,15 @@ class Entity:
     def __init__(self, collider: physics.PhysObject, sprite=None):
         self.collider = collider
         self.sprite = sprite
-     
+
     def processInputEvent(self):
         pass
-    
+
     def update(self):
         pass
 
-    #directions in sprite sheet order
-    #front right back left
+    # directions in sprite sheet order
+    # front right back left
     #  0     1     2    3
     def directionFromVelocity(self):
         if (self.collider.vel.x > 0):
@@ -39,7 +39,8 @@ class Entity:
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
-        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93), collision_type=physics.collision_types.dynamic)
+        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93),
+                                           collision_type=physics.collision_types.dynamic)
         self.width = 66
         self.height = 93
         self.speed = 100
@@ -56,13 +57,14 @@ class Player(Entity):
 
     def load_sprite(self):
         self.sprites = []
-        for i in range(0,4):
-            self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100*i, 115*self.id, 66, 93))
+        for i in range(0, 4):
+            self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(
+                graphics.rect.Rect(100 * i, 115 * self.id, 66, 93))
             self.sprites.append(self.sprite)
 
     def processInputEvent(self, event: sdl2.SDL_Event):
-        #We'll want to return a GameEvent, and these fields
-        #are the same regardless of what the rest of the event is
+        # We'll want to return a GameEvent, and these fields
+        # are the same regardless of what the rest of the event is
         game_event_dict = {
             "type": "PLAYER",
             "player_id": self.id,
@@ -71,7 +73,7 @@ class Player(Entity):
 
         if event.type == sdl2.SDL_KEYDOWN or event.type == sdl2.SDL_KEYUP:
             state = ControlsState.state
-            
+
             self.collider.vel.x = self.speed * (state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT])
             self.collider.vel.y = self.speed * (state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP])
 
@@ -90,12 +92,13 @@ class Player(Entity):
         return GameEvent(game_event_dict)
 
     def processPlayerEvent(self, event):
-        if (event.params["player_id"] != self.id):
+        if event.params["player_id"] != self.id:
             return
         self.collider.pos.from_dict(event.params["pos"])
-        
-        if (event.params["code"] == "CHANGE_VELOCITY"):
+
+        if event.params["code"] == "CHANGE_VELOCITY":
             self.collider.vel.from_dict(event.params["velocity"])
+
         elif (event.params["code"] == "SHOOT"):
             #each client is responsible for sending updates about its
             #player's bullets (and ONLY its player's bullets)
@@ -105,17 +108,20 @@ class Player(Entity):
             #out of sync
             self.shoot(event.params["direction_x"],event.params["direction_y"])
 
-    def shoot(self, direction_x,direction_y):
-        #each bullet is identified by playerid_bulletnumber
-        #this ensures that bullet ids are globally unique
-        bullet = Bullet(str(self.id) + "_" + str(self.next_bullet_id), self.collider.pos.x, self.collider.pos.y, direction_x, direction_y, self.id)
+
+    def shoot(self, direction):
+        # each bullet is identified by playerid_bulletnumber
+        # this ensures that bullet ids are globally unique
+        bullet = Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
         self.next_bullet_id += 1
         print("x: %d, y: %d" % (self.roomX, self.roomY))
 
     def getSprite(self):
         if (self.sprite == None):
             return
-        return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x), int(self.collider.pos.y))
+        return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x),
+                                            int(self.collider.pos.y))
+
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
