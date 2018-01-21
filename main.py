@@ -84,7 +84,7 @@ def main():
         curr_time = sdl2.SDL_GetTicks()
         delta = curr_time - last_phys_time
         last_phys_time = curr_time
-        sim.step(delta)
+        sim.step(delta / 1000)
 
         graphics.view.render()
 
