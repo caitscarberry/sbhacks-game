@@ -3,7 +3,7 @@ import sdl2
 import sdl2.ext
 from graphics.sprite import Sprite
 
-class Renderer:
+class SpriteRenderer:
     def __init__(self, target: sdl2.ext.Renderer, **kwargs):
         self.target = target
 
