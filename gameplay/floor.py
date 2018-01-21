@@ -1,4 +1,5 @@
 from gameplay.map import getBoard
+from gameplay.map import addDoors
 from gameplay.entity import Ladder
 import random
 from gameplay.events import GameEvent
@@ -48,6 +49,7 @@ class Floor:
                 else:
                     self.board[x][y] = Room()
                     self.board[x][y].from_dict(dict["board"][x][y])
+        addDoors(self.board)
 
     def serialize(self):
         return json.dumps(self.to_dict())

@@ -62,8 +62,7 @@ class Room:
             collidableList.append(self.collidable[i].to_dict())
 
         dict = {"enemies": enemiesList,
-                "projectiles": projectilesList,
-                "collidable": collidableList}
+                "projectiles": projectilesList}
 
         return dict
 
@@ -78,8 +77,6 @@ class Room:
             self.enemies.append(Monster.from_dict(i))
         for i in dict["projectiles"]:
             self.projectiles.append(Bullet.from_dict(i))
-        for i in dict["collidable"]:
-            self.collidable.append(Door.from_dict(i))
 
     def __str__(self):
         return str(self.enemies)
