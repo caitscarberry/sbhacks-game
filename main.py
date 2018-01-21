@@ -55,7 +55,7 @@ def main():
             sdl2.SDL_Delay(10)
             queue = messaging.get_messages()
 
-        gameplay.state.floor.from_dict(queue.get())
+        gameplay.state.floor.from_dict(json.loads(queue.get()))
 
     gameplay.state.players = []
     for i in range(num_players):
