@@ -200,6 +200,7 @@ class Bullet(Entity):
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()
+        self.alive = True
 
     def load_sprite(self):
         self.sprite = graphics.view.sprite_factory.from_file("./assets/players.png").subsprite(graphics.rect.Rect(100, 115, 66, 93))
@@ -208,3 +209,6 @@ class Bullet(Entity):
         if (self.sprite == None):
             return
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x), int(self.collider.pos.y))
+
+    def onCollide(self, collider, other):
+        self.alive = False

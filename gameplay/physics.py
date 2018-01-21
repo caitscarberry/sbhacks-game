@@ -222,6 +222,9 @@ class Simulation:
         
     def add_object(self, obj):
         self.objects.add(obj)
+
+    def remove_object(self, obj):
+        self.objects.remove(obj)
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)

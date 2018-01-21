@@ -103,6 +103,14 @@ class Room:
                     currDifficulty += self.enemyDifficulties[enemy]
                     enemy = self.chooseEnemy()
 
+
+    def cleanup(self):
+        for key, value in self.projectiles:
+            if not value.alive:
+                del self.projectiles[key]
+                self.simulation.remove_object(value.collider)
+                
+        
     def chooseEnemy(self):
         totalProbVals = 0
         for x in range(len(self.enemyProbabilities)):
