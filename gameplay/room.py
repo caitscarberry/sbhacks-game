@@ -1,6 +1,8 @@
 import random
 from graphics.sprite_to_render import SpriteToRender
 import graphics.view
+from gameplay.physics import Simulation
+
 class Room:
     def __init__(self):
         self.enemyDifficulties = [1,2,3,5,7]
@@ -15,6 +17,7 @@ class Room:
         self.projectiles = []
         self.collidable = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
+        self.simulation = Simulation()
 
         self.generateEnemies()
 
