@@ -1,4 +1,5 @@
 from gameplay.map import getBoard
+from gameplay.entity import Entity #for ladder
 import random
 
 class Floor:
@@ -7,6 +8,8 @@ class Floor:
         self.distanceSeparator = self.boardSize // 4
         self.board = getBoard(self.boardSize, numEmptySquares)
         self.ladderLoc = self.genLadderLoc()
+        #adds ladder entity to collidable list
+        self.board[self.ladderLoc[0]][self.ladderLoc[1]].collidable.append(Entity())
         self.startingLocs = []
         self.genStartingLocs()
 
@@ -15,7 +18,7 @@ class Floor:
             for j in range(self.boardSize):
                 if self.board[i][j] == None:
                     print(' ', end='')
-                elif (i,j) == self.ladderLoc:
+                elif self.board[i][j].collidable != []:
                     print('L', end='')
                 else:
                     try:
