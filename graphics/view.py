@@ -31,7 +31,9 @@ def initView():
     subviews = []
 
 def makeGameSubView():
-    subviews.append(GameView(SIDEBAR_WIDTH,0,GAME_WIDTH,WINDOW_SIZE[1]))
+    global game_view
+    game_view = GameView(SIDEBAR_WIDTH,0,GAME_WIDTH,WINDOW_SIZE[1])
+    subviews.append(game_view)
 
 def render():
     raw_renderer.clear((0,0,0))
@@ -58,7 +60,8 @@ class GameView(SubView):
         super().__init__(x, y, height, width)
 
     def render(self):
-        roomX, roomY = gameplay.state.floor.startingLocs[0]
+        roomX = gameplay.state.players[gameplay.state.my_player_id].roomX
+        roomY = gameplay.state.players[gameplay.state.my_player_id].roomY
         sprites = gameplay.state.floor.board[roomX][roomY].getSprites()
         if (sprites is None):
             return
