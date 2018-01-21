@@ -123,7 +123,7 @@ def main():
         monster_update = gameplay.state.floor.get_update_event(my_player.roomX, my_player.roomY)
         monster_update_str = monster_update.serialize().encode("utf-8")
         if nearby_ps[0] == gameplay.state.my_player_id and len(nearby_ps) > 1:
-            if frame % 30 == 0
+            if frame % 30 == 0:
                 for p in nearby_ps:
                     if nearby_ps[p] != gameplay.state.my_player_id:
                         messaging.send_to(p, monster_update_str)
