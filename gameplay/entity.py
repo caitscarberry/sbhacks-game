@@ -96,12 +96,20 @@ class Door(Entity):
 
 class Ladder(Entity):
     def __init__(self):
-        self.collider = None #set this
+        self.collider = physics.PhysObject(Vec2(300, 300),
+                                           Polygon.square(300, 300, 16, 16), self,
+                                           collision_type=physics.collision_types.trigger)
         self.width = 64
         self.height = 64
         self.speed = 0
+        self.collider.add_callback(self.onCollide)
+        self.collider.vel.x = 0
+        self.collider.vel.y = 0
         self.sprite = None
         self.loadSprite()
+
+    def onCollide(self, collider: physics.PhysObject, other: physics.PhysObject):
+        return
 
     def loadSprite(self):
         self.sprite = gameplay.state.trapDoor

@@ -4,6 +4,7 @@ import graphics.view
 from gameplay.physics import Simulation, PhysObject, Polygon, Vec2
 from gameplay.monster import Monster
 from gameplay.entity import Bullet
+from gameplay.entity import Ladder
 from gameplay.entity import Door
 import gameplay.state
 
@@ -20,7 +21,7 @@ class Room:
         self.maxEnemies = 5
         self.enemies = []
         self.projectiles = []
-        self.collidable = []
+        self.collidables = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
         self.background.rect.x
         self.background.rect.y
@@ -28,7 +29,12 @@ class Room:
         self.simulation = Simulation()
         self.make_walls()
         self.generateEnemies()
+        self.addCollidablesToSim()
 
+    def addCollidablesToSim(self):
+        for c in self.collidables:
+            if isinstance(c.owner, Ladder):
+                self.simulation.add_object(c.collider)
     def make_walls(self):
         thickness = 64
         width = 1000 - 188
@@ -59,11 +65,12 @@ class Room:
             projectilesList.append(self.projectiles[i].to_dict())
 
         collidableList = []
-        for i in range(len(self.collidable)):
-            collidableList.append(self.collidable[i].to_dict())
+        for i in range(len(self.collidables)):
+            collidableList.append(self.collidables[i].to_dict())
 
         dict = {"enemies": enemiesList,
-                "projectiles": projectilesList}
+                "projectiles": projectilesList,
+                "collidables" : collidableList}
 
         return dict
 
@@ -73,7 +80,7 @@ class Room:
         self.projectiles = []
 
         for o in self.simulation.objects:
-            if isinstance(o.owner, Monster) or isinstance(o.owner, Bullet):
+            if isinstance(o.owner, Monster) or isinstance(o.owner, Bullet) or isinstance(o.owner, Ladder):
                 self.simulation.remove_object(o)
         for i in dict["enemies"]:
             monster = Monster.from_dict(i)
@@ -83,6 +90,10 @@ class Room:
             bullet = Bullet.from_dict(i)
             self.projectiles.append(bullet)
             self.simulation.add_object(bullet.collider)
+        for i in dict["collidables"]:
+            ladder = Ladder.from_dict(i)
+            self.collidables.append(ladder)
+            self.simulation.add_object(ladder.collider)
 
     def __str__(self):
         return str(self.enemies)
@@ -144,5 +155,5 @@ class Room:
                                          self.background.rect.y + self.background.rect.height / 2,
                                          graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
         sprites = sprites + [x.getSprite() for x in self.projectiles]
-        sprites = sprites + [x.getSprite() for x in self.collidable]
+        sprites = sprites + [x.getSprite() for x in self.collidables]
         return sprites
