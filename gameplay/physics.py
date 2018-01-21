@@ -240,10 +240,10 @@ class Simulation:
         for key, dist in collisions:
             minvec = self.sat(obj.collision, key.collision, distance)
             if minvec:
-                if obj.callback:
-                    for cb in obj.callback(obj, key)
-                if key.callback:
-                    key.callback(obj, key)
+                for cb in obj.callbacks:
+                    cb(obj, key)
+                for cb in key.callbacks:
+                    cb(obj, key)
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
                 if key.collision_type != collision_types.trigger or \
