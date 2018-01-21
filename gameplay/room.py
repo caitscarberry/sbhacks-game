@@ -123,5 +123,5 @@ class Room:
             graphics.view.SpriteToRender(self.background, self.background.rect.x + self.background.rect.width / 2,
                                          self.background.rect.y + self.background.rect.height / 2,
                                          graphics.view.GAME_WIDTH, graphics.view.WINDOW_SIZE[1])]
-        sprites = sprites + [x.getSprite() for x in self.projectiles]
+        sprites = sprites + [x.getSprite() for x in self.projectiles.values()]
         return sprites
