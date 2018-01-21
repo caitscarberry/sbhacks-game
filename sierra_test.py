@@ -15,11 +15,12 @@ def main():
             if map[i][j] is None:
                 print(0, end='')
             else:
+
                 print(1, end='')
         print('')
 
     '''
-    print(Floor(10, 35))
+    print(Floor(10, 30))
 
 
 main()

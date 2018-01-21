@@ -62,8 +62,9 @@ class Player(Entity):
 
         if event.type == sdl2.SDL_KEYDOWN or event.type == sdl2.SDL_KEYUP:
             state = ControlsState.state
-            velocity_x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
-            velocity_y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
+            
+            self.collider.vel.x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
+            self.collider.vel.y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
 
             game_event_dict["code"] = "CHANGE_VELOCITY"
             game_event_dict["velocity"] = self.collider.vel.to_dict()
@@ -98,7 +99,8 @@ class Player(Entity):
     def render(self, renderer):
         if (self.sprite == None):
             return
-        renderer.draw_sprite(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x), int(self.collider.pos.x))
+        print(self.collider.pos)
+        renderer.draw_sprite(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x), int(self.collider.pos.y))
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction, player_id):

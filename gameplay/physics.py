@@ -26,7 +26,7 @@ class Vec2:
     def dot(self, other):
         return self.x * other.x + self.y * other.y
     
-    def __str__(self):
+    def __repr__(self):
         return "({}, {})".format(self.x, self.y)
     
     def __add__(self, other):
@@ -35,6 +35,7 @@ class Vec2:
     def __iadd__(self, other):
         self.x += other.x
         self.y += other.y
+        return self
         
     def __sub__(self, other):
         return Vec2(self.x - other.x, self.y - other.y)
@@ -42,6 +43,7 @@ class Vec2:
     def __isub__(self, other):
         self.x -= other.x
         self.y -= other.y
+        return self
         
     def __mul__(self, scalar):
         return Vec2(self.x * scalar, self.y * scalar)
@@ -49,6 +51,7 @@ class Vec2:
     def __imul__(self, scalar):
         self.x *= scalar
         self.y *= scalar
+        return self
         
     def __truediv__(self, scalar):
         return Vec2(self.x / scalar, self.y / scalar)
@@ -56,6 +59,7 @@ class Vec2:
     def __itruediv__(self, scalar):
         self.x /= scalar
         self.y /= scalar
+        return self
         
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -156,6 +160,7 @@ class PhysObject:
     def __init__(self, pos, collision: Polygon, vel: Vec2=None, callback: callable=None):
         self.pos = pos
         self.vel = vel or Vec2()
+        print(self.vel)
         self.callback = callback
         self.collision = collision
         self.aabb = collision.get_aabb()
@@ -167,6 +172,12 @@ class Simulation:
         self.objects = set()
         
 
+    def step(self, dt):
+        for obj in self.objects:
+            distance = obj.vel * dt
+            print(distance)
+            self.move_object(obj, distance)
+        
     def add_object(self, obj):
         self.objects.add(obj)
         
@@ -174,24 +185,28 @@ class Simulation:
         extended_box = obj.aabb.extend(distance)
         collisions = []
         # Get all possible collisions
+
         for other in self.objects:
             if other is obj:
                 continue
 
             if extended_box.intersects(other.aabb):
                 collisions.append((other, other.pos - obj.pos))
-        collisions.sort(key=lambda x: x[1].squaredistance())
-
+        collisions.sort(key=lambda x: x[1].squarelength())
+        
         # Do SAT until we get any collisions
         obj.pos += distance
         for key, dist in collisions:
-            minvec = self.sat(obj, key)
+            minvec = self.sat(obj.collision, key.collision)
             if minvec:
+                print(minvec)
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
                 obj.pos -= minvec
+                print("Collides!")
+                return
         
-                
+        #print(obj.pos)
         
 
     def sat(self, first: Polygon, second: Polygon):

@@ -4,16 +4,18 @@ import sdl2
 import sdl2.ext
 import sdl2.ext.sprite
 from sdl2.ext.color import Color
-from graphics.init import init_window
 import graphics.sprite
 import graphics.render
 import sys
 import socket
+
 from graphics.rect import Rect
 from gameplay.entity import Player
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
+from gameplay import physics
 from networking.messaging_handler import MessagingHandler
+import graphics.view
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
@@ -36,24 +38,30 @@ def main():
     messaging = MessagingHandler()
     messaging.connect(player_adds, num_players, my_player_id)
 
-    window = init_window()
+    graphics.view.initView()
+
     running = True
-    render = sdl2.ext.sprite.Renderer(window)
-    my_render = graphics.render.Renderer(render)
+
+    graphics.view.sprite_renderer = graphics.render.Renderer(graphics.view.raw_renderer)
 
     col = Color(123, 123, 123)
 
-    spritefac = graphics.sprite.SpriteFactory(render)
+    spritefac = graphics.sprite.SpriteFactory(graphics.view.raw_renderer)
 
     playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
 
     players = []
-    for i in range(num_players):
+    for i in range(num_players): 
         players.append(Player(i, 50*i, 50))
 
     for player in players:
         player.load_sprite(spritefac)
-
+    sim = physics.Simulation()
+    dg = spritefac.from_file("./assets/dungeon.png")
+    r = dg.rect
+    wall = physics.PhysObject(physics.Vec2(300, 300), physics.Polygon.square(r.x + 300, r.y + 300, r.width, r.height))
+    sim.add_object(player.collider)
+    sim.add_object(wall)
     while running == True:
         input_events = sdl2.ext.get_events()
 
@@ -80,14 +88,14 @@ def main():
         for event in game_events:
             if (event.params["type"] == "PLAYER"):
                 players[event.params["player_id"]].processPlayerEvent(event)
+        #for player in players:
+        #    player.update()
+        sim.step(16)
+        graphics.view.raw_renderer.clear(col)
         for player in players:
-            player.update()
-
-        render.clear(col)
-        for player in players:
-            player.render(my_render)
-        render.present()
-        window.refresh()
+            player.render(graphics.view.sprite_renderer)
+        graphics.view.raw_renderer.present()
+        graphics.view.window.refresh()
         sdl2.SDL_Delay(16)
 
 

@@ -8,9 +8,8 @@ class Room:
         self.probOfEnemies = 75
         self.probOfSameEnemies = 50
         self.minDifficulty = 3
-        self.maxDifficulty = 14
+        self.maxDifficulty = 17
         self.maxEnemies = 5
-        self.hasLadder = False
         self.enemies = []
 
         self.generateEnemies()
@@ -52,6 +51,3 @@ class Room:
             else:
                 currentSum += self.enemyProbabilities[x]
         return chosenEnemy
-
-    def setHasLadder(self):
-        self.hasLadder = True
