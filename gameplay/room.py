@@ -1,7 +1,7 @@
 import random
 from graphics.sprite_to_render import SpriteToRender
 import graphics.view
-from gameplay.physics import Simulation
+from gameplay.physics import Simulation, PhysObject, Polygon, Vec2
 from gameplay.monster import Monster
 
 class Room:
@@ -18,10 +18,35 @@ class Room:
         self.projectiles = {}
         self.collidable = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
+        self.background.rect.x
+        self.background.rect.y
+        
         self.simulation = Simulation()
-
+        self.make_walls()
         self.generateEnemies()
 
+
+    def make_walls(self):
+        thickness = 64
+        width = 1000 - 188
+        height = 650 
+        x, y = width // 2, 32
+        rect = Polygon.square(x, y, width - 100, 32)
+        self.simulation.add_object(PhysObject(Vec2(x, y), rect, None))
+        
+        y = height - 32
+        rect = Polygon.square(x, y, width - 100, 32)
+        self.simulation.add_object(PhysObject(rect.pos, rect, None))
+
+        x, y = 32, height // 2
+        rect = Polygon.square(x, y, 32, height - 100)
+        self.simulation.add_object(PhysObject(rect.pos, rect, None))
+
+        x = width - 32
+        rect = Polygon.square(x, y, 32, height - 100)
+        self.simulation.add_object(PhysObject(rect.pos, rect, None))
+        
+        
     def toDict(self):
         enemiesList = []
         for i in range(len(self.enemies)):
@@ -96,7 +121,8 @@ class Room:
         return chosenEnemy
 
     def getSprites(self):
-        sprites = [graphics.view.SpriteToRender(self.background, 0, 0)]
+        sprites = [graphics.view.SpriteToRender(self.background, self.background.rect.x + self.background.rect.width / 2, self.background.rect.y + self.background.rect.height / 2)]
+        
         sprites = sprites + [x.getSprite() for x in self.projectiles.values()]
         return sprites
         
