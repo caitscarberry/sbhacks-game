@@ -106,4 +106,4 @@ class GameView(SubView):
             if not isinstance(enemy, int):
                 sprite = enemy.getSprite()
                 self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
-        sprite_renderer.draw_collision_boxes(gameplay.state.floor.board[roomX][roomY].simulation)
+        # sprite_renderer.draw_collision_boxes(gameplay.state.floor.board[roomX][roomY].simulation)
