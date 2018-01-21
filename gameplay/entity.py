@@ -197,6 +197,7 @@ class Bullet(Entity):
         #the player that fired this bullet
         self.player_id = player_id
         self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 10, 10), self, collision_type=physics.collision_types.player)
+        self.collider.add_callback(self.onCollide)
         roomx = gameplay.state.players[player_id].roomX
         roomy = gameplay.state.players[player_id].roomY
         room = gameplay.state.floor.board[roomx][roomy]

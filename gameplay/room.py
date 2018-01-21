@@ -105,11 +105,13 @@ class Room:
 
 
     def cleanup(self):
-        for key, value in self.projectiles:
+        dead = []
+        for key, value in self.projectiles.items():
             if not value.alive:
-                del self.projectiles[key]
+                dead.append(key)
                 self.simulation.remove_object(value.collider)
-                
+        for key in dead:
+            del self.projectiles[key]
         
     def chooseEnemy(self):
         totalProbVals = 0
