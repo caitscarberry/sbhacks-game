@@ -73,17 +73,23 @@ class Room:
         self.projectiles = []
 
         for i in dict["enemies"]:
-            self.enemies.append(Monster.from_dict(i))
+            monster = Monster.from_dict(i)
+            self.enemies.append(monster)
+            self.simulation.add_object(monster.collider)
         for i in dict["projectiles"]:
-            self.projectiles.append(Bullet.from_dict(i))
+            bullet = Bullet.from_dict(i)
+            self.projectiles.append(bullet)
+            self.simulation.add_object(bullet.collider)
 
     def __str__(self):
         return str(self.enemies)
 
     def generateEnemies(self):
         for i in range(random.randrange(1, 3)):
-            self.enemies.append(Monster(gameplay.state.curr_id, random.randrange(200, 500), random.randrange(200, 500)))
             gameplay.state.curr_id += 1
+            monster = Monster(gameplay.state.curr_id, random.randrange(200, 500), random.randrange(200, 500))
+            self.enemies.append(monster)
+            self.simulation.add_object(monster.collider)
         return
 
         if random.randrange(0, 100) < self.probOfEnemies:  # there are enemies

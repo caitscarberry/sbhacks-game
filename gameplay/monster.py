@@ -8,7 +8,6 @@ from gameplay.controls import ControlsState
 import graphics.sprite
 import graphics.render
 import graphics.view
-import gameplay.state
 
 
 class Monster(Entity):
@@ -22,7 +21,6 @@ class Monster(Entity):
         self.load_sprite()
         self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, self.width, self.height),
                                            self, collision_type=physics.collision_types.dynamic)
-        gameplay.state.floor.board[x][y].simulation.add_object(self.collider)
 
     def load_sprite(self):
         self.sprites = []
