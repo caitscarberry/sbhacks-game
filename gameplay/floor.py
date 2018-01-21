@@ -3,6 +3,7 @@ from gameplay.entity import Ladder
 import random
 from gameplay.events import GameEvent
 from gameplay.room import Room
+import json
 
 class Floor:
     def __init__(self):
@@ -47,6 +48,9 @@ class Floor:
                 else:
                     self.board[x][y] = Room()
                     self.board[x][y].from_dict(dict["board"][x][y])
+
+    def serialize(self):
+        return json.dumps(self.to_dict())
 
     def get_update_event(self, room_x, room_y):
         game_event_dict = {

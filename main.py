@@ -48,7 +48,7 @@ def main():
 
     if gameplay.state.my_player_id == 0:
         gameplay.state.floor.genFloor(3, 3)
-        messaging.broadcast(gameplay.state.floor.to_dict().encode("utf-8"))
+        messaging.broadcast(gameplay.state.floor.serialize().encode("utf-8"))
     else:
         queue = messaging.get_messages()
         while queue.empty():
