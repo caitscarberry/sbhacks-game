@@ -20,7 +20,7 @@ class Monster(Entity):
         self.sprite = None
         self.load_sprite()
         self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, self.width, self.height),
-                                           collision_type=physics.collision_types.dynamic)
+                                           self, collision_type=physics.collision_types.dynamic)
 
     def load_sprite(self):
         self.sprites = []

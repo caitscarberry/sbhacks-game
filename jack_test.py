@@ -30,17 +30,17 @@ def main():
         print("Please provide player file name and player id")
         sys.exit(1)
 
-    my_player_id = None
+    gameplay.state.my_player_id = None
     players_str = None
     with open(sys.argv[1], "r") as player_file:
-        my_player_id = int(sys.argv[2])
+        gameplay.state.my_player_id = int(sys.argv[2])
         players_str = player_file.read()
 
     player_adds = players_str.split()
     num_players = len(player_adds)
 
     messaging = MessagingHandler()
-    messaging.connect(player_adds, num_players, my_player_id)
+    messaging.connect(player_adds, num_players, gameplay.state.my_player_id)
 
     graphics.view.initView()
     graphics.view.makeGameSubView()
@@ -75,7 +75,7 @@ def main():
                 if not ControlsState.should_process_input_event(event):
                     continue
                 ControlsState.update_state(event)
-                player_event = gameplay.state.players[my_player_id].processInputEvent(event)
+                player_event = gameplay.state.players[gameplay.state.my_player_id].processInputEvent(event)
                 if player_event.params["code"] == "NONE":
                     continue
                 game_events.append(player_event)
