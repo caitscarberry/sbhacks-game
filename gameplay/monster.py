@@ -23,6 +23,14 @@ class Monster(Entity):
         self.load_sprite()
         self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, self.width, self.height),
                                            self, collision_type=physics.collision_types.dynamic)
+        self.collider.add_callback(self.onCollide)
+        self.alive = True
+        self.death_recorded = False
+
+    def onCollide(self, collider: physics.PhysObject, other: physics.PhysObject):
+        if other.collision_type == physics.collision_types.player and\
+        isinstance(other.owner, Bullet):
+            self.alive = False
 
     def load_sprite(self):
         sprite1 = None
@@ -77,11 +85,16 @@ class Monster(Entity):
         return sprite
 
     def to_dict(self):
-        return {"pos": self.collider.pos.to_dict(), "vel": self.collider.vel.to_dict(), "id": self.id, "type": self.type}
+        if (not self.alive):
+            self.death_recorded = True
+        return {"pos": self.collider.pos.to_dict(), "vel": self.collider.vel.to_dict(), "id": self.id, "type": self.type, "alive": self.alive}
 
     @staticmethod
     def from_dict(dict):
         pos = Vec2.from_dict(dict["pos"])
         m = Monster(dict["id"], pos.x, pos.y, dict["type"])
         m.collider.vel = Vec2.from_dict(dict["vel"])
+        m.alive = dict["alive"]
+        if (not m.alive):
+            m.death_recorded = True
         return m
