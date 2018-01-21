@@ -1,1 +1,2 @@
 global players
+global floor
