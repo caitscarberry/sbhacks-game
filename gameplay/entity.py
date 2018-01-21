@@ -40,7 +40,7 @@ class Entity:
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
-        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 40, 70),
+        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 30, 45),
                                            self, collision_type=physics.collision_types.dynamic)
         self.width = 66
         self.height = 93
