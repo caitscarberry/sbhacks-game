@@ -2,6 +2,7 @@ from ctypes import pointer
 import sdl2
 import sdl2.ext
 from graphics.sprite import Sprite
+from gameplay.physics import Simulation
 
 class SpriteRenderer:
     def __init__(self, target: sdl2.ext.Renderer, **kwargs):
@@ -21,3 +22,13 @@ class SpriteRenderer:
         retcode = rcopy(sdlrender, texture, pointer(sprite.rect.rect), dstrect)
         if retcode == -1:
             raise sdl2.ext.SDLError()
+
+    def draw_rect(self, x, y, w, h):
+        self.target.draw_rect
+        self.target.draw_rect([(int(x), int(y), int(w), int(h))])
+
+    def draw_collision_boxes(self, sim):
+        for obj in sim.objects:
+            aabb = obj.aabb
+            print(aabb)
+            self.draw_rect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1, aabb.y2 - aabb.y1)

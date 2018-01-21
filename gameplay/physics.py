@@ -102,6 +102,9 @@ class AABB:
         else:
             y2 += distance.y
         return AABB(x1, y1, x2 - x1, y2 - y1)
+
+    def __repr__(self):
+        return "[{}, {}, {}, {}]".format(self.x1, self.y1, self.x2, self.y2)
     
 
 class LineSegment:
@@ -146,7 +149,10 @@ class Polygon:
 
         return LineSegment(low, high)
         
-    
+    def move(self, distance:Vec2):
+        for v in self.verts:
+            v += distance
+            
     @staticmethod
     def square(x, y, w, h):
         axes = [Vec2(x, y), Vec2(x + w, y), Vec2(x + w, y + h), Vec2(x, y + h)]
@@ -160,11 +166,14 @@ class PhysObject:
     def __init__(self, pos, collision: Polygon, vel: Vec2=None, callback: callable=None):
         self.pos = pos
         self.vel = vel or Vec2()
-        print(self.vel)
         self.callback = callback
         self.collision = collision
-        self.aabb = collision.get_aabb()
         self.collision_type = PhysObject.collision_types.static
+        
+
+    @property
+    def aabb(self):
+        return self.collision.get_aabb()
 
 
 class Simulation:
@@ -192,10 +201,13 @@ class Simulation:
 
             if extended_box.intersects(other.aabb):
                 collisions.append((other, other.pos - obj.pos))
+                
         collisions.sort(key=lambda x: x[1].squarelength())
-        
+        print(collisions)
+        print(distance)
         # Do SAT until we get any collisions
         obj.pos += distance
+        obj.collision.move(distance)
         for key, dist in collisions:
             minvec = self.sat(obj.collision, key.collision)
             if minvec:
@@ -203,6 +215,7 @@ class Simulation:
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
                 obj.pos -= minvec
+                obj.collision.move(-minvec)
                 print("Collides!")
                 return
         
