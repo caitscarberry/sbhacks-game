@@ -11,8 +11,41 @@ class Room:
         self.maxDifficulty = 17
         self.maxEnemies = 5
         self.enemies = []
+        self.projectiles = []
+        self.collidable = []
 
         self.generateEnemies()
+
+    def toDict(self):
+        enemiesList = []
+        for i in range(len(self.enemies)):
+            enemiesList.append(self.enemies[i].toDict())
+
+        projectilesList = []
+        for i in range(len(self.projectiles)):
+            projectilesList.append(self.projectiles[i].toDict())
+
+        collidableList = []
+        for i in range(len(self.enemies)):
+            collidableList.append(self.collidable[i].toDict())
+
+        dict = {"enemies": enemiesList,
+                "projectiles": projectilesList,
+                "collidable": collidableList}
+
+        return dict
+
+    def fromDict(self, dict):
+        self.enemies = []
+        self.projectiles = []
+        self.collidable = []
+
+        for i in dict["enemies"]:
+            self.enemies.append(i.fromDict())
+        for i in dict["projectiles"]:
+            self.projectiles.append(i.fromDict())
+        for i in dict["collidable"]:
+            self.collidable.append(i.fromDict())
 
     def __str__(self):
         return str(self.enemies)

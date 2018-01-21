@@ -20,7 +20,7 @@ def main():
         print('')
 
     '''
-    print(Floor(10, 30))
+    print(Room())
 
 
 main()

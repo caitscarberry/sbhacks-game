@@ -42,13 +42,7 @@ def main():
 
     running = True
 
-    graphics.view.sprite_renderer = graphics.render.Renderer(graphics.view.raw_renderer)
-
     col = Color(123, 123, 123)
-
-    spritefac = graphics.sprite.SpriteFactory(graphics.view.raw_renderer)
-
-    playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
 
     players = []
     for i in range(num_players): 
@@ -56,6 +50,7 @@ def main():
 
     for player in players:
         player.load_sprite(spritefac)
+        
     sim = physics.Simulation()
     dg = spritefac.from_file("./assets/dungeon.png")
     r = dg.rect
