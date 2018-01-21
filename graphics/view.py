@@ -70,3 +70,7 @@ class GameView(SubView):
         for player in gameplay.state.players:
             sprite = player.getSprite()
             self.renderSprite(sprite.img, sprite.x, sprite.y)
+        # TODO: change to only render in current room
+        for enemy in gameplay.state.floor.board[0][0].enemies:
+            sprite = enemy.getSprite()
+            self.renderSprite(sprite.img, sprite.x, sprite.y)

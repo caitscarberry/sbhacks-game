@@ -1,34 +1,28 @@
-from networking.messaging_handler import MessagingHandler
+from networking.message_queue_holder import MessageQueueHolder
+from sdl2 import SDL_Delay
+from sdl2 import SDL_GetTicks
+import gameplay.state
+import graphics.view
 import sdl2
 import sdl2.ext
 import sdl2.ext.sprite
 from sdl2.ext.color import Color
-from graphics.init import init_window
 import graphics.sprite
 import graphics.render
 import sys
 import socket
+from graphics.rect import Rect
 from gameplay.entity import Player
+from gameplay.events import GameEvent
+from gameplay.controls import ControlsState
+from networking.messaging_handler import MessagingHandler
+from gameplay.physics import Simulation
+import graphics.view
+from gameplay.floor import Floor
+from gameplay.monster import Monster
+from gameplay.room import Room
 
-
-class ControlsState:
-    def __init__(self):
-        self.state = {sdl2.SDLK_UP: False, sdl2.SDLK_DOWN: False, sdl2.SDLK_RIGHT: False, sdl2.SDLK_LEFT: False}
-        self.arrow_keys = [sdl2.SDLK_UP, sdl2.SDLK_DOWN, sdl2.SDLK_RIGHT, sdl2.SDLK_LEFT]
-
-    def should_process_input_event(self, event):
-        if (event.type != sdl2.SDL_KEYDOWN and event.type != sdl2.SDL_KEYUP):
-            return True
-        if (not event.key.keysym.sym in self.arrow_keys):
-            return False
-        return ((event.type == sdl2.SDL_KEYDOWN) and (not self.state[event.key.keysym.sym])) or (
-                    (event.type == sdl2.SDL_KEYUP) and (self.state[event.key.keysym.sym]))
-
-    def update_state(self, event):
-        if (event.type == sdl2.SDL_KEYDOWN):
-            self.state[event.key.keysym.sym] = True
-        elif (event.type == sdl2.SDL_KEYUP):
-            self.state[event.key.keysym.sym] = False
+FRAME_LENGTH = 17
 
 
 def main():
@@ -48,37 +42,81 @@ def main():
     messaging = MessagingHandler()
     messaging.connect(player_adds, num_players, my_player_id)
 
-    window = init_window()
+    graphics.view.initView()
+    graphics.view.makeGameSubView()
     running = True
-    render = sdl2.ext.sprite.Renderer(window)
-    my_render = graphics.render.Renderer(render)
 
-    col = Color(123, 123, 123)
-    playersprite = graphics.sprite.Sprite.from_file("./assets/players.png")
-    player = Player(0, 0, 0)
-    controls_state = ControlsState()
+    gameplay.state.floor = Floor()
+    gameplay.state.floor.genFloor(10, 25)
+    gameplay.state.players = []
+    sim = Simulation()
+
+    for i in range(num_players):
+        gameplay.state.players.append(Player(i, 50 * i, 50))
+        sim.add_object(gameplay.state.players[i].collider)
+
+    gameplay.state.floor.board[0][0] = Room()
+    gameplay.state.floor.board[0][0].enemies = []
+    gameplay.state.floor.board[0][0].enemies.append(Monster(0, 100, 100))
+    sim.add_object(gameplay.state.floor.board[0][0].enemies[0].collider)
+
+    last_phys_time = sdl2.SDL_GetTicks()
     while running == True:
-        events = sdl2.ext.get_events()
-        render.clear(col)
-        my_render.draw_sprite(playersprite, player.x, player.y)
-        player_events = []
-        for event in events:
+        frame_start = sdl2.SDL_GetTicks()
+
+        input_events = sdl2.ext.get_events()
+        game_events = []
+
+        for event in input_events:
             if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
             else:
-                if controls_state.should_process_input_event(event):
-                    player_event = player.processInputEvt(event)
-                    player_events.append(player_event)
-                    controls_state.update_state(event)
-                    # broadcast player event
-        for event in player_events:
-            player.processPlayerEvt(event)
-        player.update()
-        render.present()
-        window.refresh()
-        sdl2.SDL_Delay(16)
+                if not ControlsState.should_process_input_event(event):
+                    continue
+                ControlsState.update_state(event)
+                player_event = gameplay.state.players[my_player_id].processInputEvent(event)
+                if player_event.params["code"] == "NONE":
+                    continue
+                game_events.append(player_event)
+                messaging.broadcast(player_event.serialize().encode("utf-8"))
+
+        for enemy in gameplay.state.floor.board[0][0].enemies:
+            enemy.chooseNewDirection(gameplay.state.players)
+
+        messages = messaging.get_messages()
+        while messages.qsize() > 0:
+            msg = messages.get()
+            game_events.append(GameEvent.deserialize(msg.decode("utf-8")))
+
+        for event in game_events:
+            if (event.params["type"] == "PLAYER"):
+                gameplay.state.players[event.params["player_id"]].processPlayerEvent(event)
+
+        curr_time = sdl2.SDL_GetTicks()
+        delta = curr_time - last_phys_time
+        last_phys_time = curr_time
+        sim.step(delta / 1000)
+
+        graphics.view.render()
+
+        frame_end = sdl2.SDL_GetTicks()
+        remaining_time = (frame_start + FRAME_LENGTH) - frame_end
+        if remaining_time > 0:
+            sdl2.SDL_Delay(remaining_time)
+
+    sdl2.ext.quit()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except sdl2.ext.SDLError:
+        pass
+    except RuntimeError as e:
+        print(e)
+    finally:
+        sdl2.ext.quit()
+
+
+
