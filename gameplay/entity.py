@@ -126,10 +126,9 @@ class Player(Entity):
         self.load_sprite()
 
     def setRoom(self, newX, newY):
-        if self.id != gameplay.state.my_player_id:
-            if newX != self.roomX or newY != self.roomY:
-                gameplay.state.floor.board[self.roomX][self.roomY].simulation.remove_object(self.collider)
-                gameplay.state.floor.board[newX][newY].simulation.add_object(self.collider)
+        if newX != self.roomX or newY != self.roomY:
+            gameplay.state.floor.board[self.roomX][self.roomY].simulation.remove_object(self.collider)
+            gameplay.state.floor.board[newX][newY].simulation.add_object(self.collider)
 
         self.roomX = newX
         self.roomY = newY
@@ -235,8 +234,8 @@ class Player(Entity):
         if obj1.id != gameplay.state.my_player_id:
             return
         gameplay.state.players[gameplay.state.my_player_id].setRoom(obj2.toX, obj2.toY)
-        gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
-        gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
+        # gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
+        # gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
         self.collider.pos = Vec2(500,300)
 
         for collider in gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.objects:
