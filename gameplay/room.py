@@ -78,6 +78,7 @@ class Room:
     def from_dict(self, dict):
         self.enemies = []
         self.projectiles = []
+        self.collidables = []
 
         for o in self.simulation.objects:
             if isinstance(o.owner, Monster) or isinstance(o.owner, Bullet) or isinstance(o.owner, Ladder):
