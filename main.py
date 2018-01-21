@@ -113,6 +113,11 @@ def main():
         while not gameplay.state.global_queue.empty():
             messaging.broadcast(gameplay.state.global_queue.get().serialize().encode("utf-8"))
 
+        for player in gameplay.state.players:
+            if player.id != gameplay.state.my_player_id:
+                if player.roomX == my_player.roomX and player.roomY == my_player.roomY:
+                    gameplay.state.floor[player.roomX][player.roomY].simulation.add_object(player.collider)
+
         graphics.view.render()
 
         frame_end = sdl2.SDL_GetTicks()
