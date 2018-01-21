@@ -71,6 +71,8 @@ class GameView(SubView):
             sprite = player.getSprite()
             self.renderSprite(sprite.img, sprite.x, sprite.y)
         # TODO: change to only render in current room
-        for enemy in gameplay.state.floor.board[0][0].enemies:
-            sprite = enemy.getSprite()
-            self.renderSprite(sprite.img, sprite.x, sprite.y)
+        if gameplay.state.floor.board[0][0] is not None:
+            for enemy in gameplay.state.floor.board[0][0].enemies:
+                if not isinstance(enemy, int):
+                    sprite = enemy.getSprite()
+                    self.renderSprite(sprite.img, sprite.x, sprite.y)
