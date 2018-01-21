@@ -38,7 +38,9 @@ class Entity:
         pass
 
 class Door(Entity):
-    def __init__(self, dir):
+    def __init__(self, dir, nextX, nextY):
+        self.toX = nextX
+        self.toY = nextY
         leftX = 32
         midX = graphics.view.GAME_WIDTH / 2
         rightX = graphics.view.GAME_WIDTH - 32
@@ -187,7 +189,13 @@ class Player(Entity):
                                             int(self.collider.pos.y))
 
     def onDoor(self, obj1, obj2):
-        pass
+        if isinstance(obj1, Door):
+            gameplay.state.players[gameplay.state.my_player_id].roomX = obj1.toX
+            gameplay.state.players[gameplay.state.my_player_id].roomY = obj1.toY
+        elif isinstance(obj2, Door):
+            gameplay.state.players[gameplay.state.my_player_id].roomX = obj2.toX
+            gameplay.state.players[gameplay.state.my_player_id].roomY = obj2.toY
+
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
