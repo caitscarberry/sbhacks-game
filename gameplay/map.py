@@ -83,6 +83,8 @@ def genBoard (board, roomLocs, boardSize):
 def addDoors (board):
     for roomX in range(len(board)):
         for roomY in range(len(board)):
+            if board[roomX][roomY] is None:
+                continue
             upY = roomY - 1
             if upY < 0:
                 upY = len(board) - 1
