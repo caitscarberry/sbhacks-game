@@ -8,7 +8,8 @@ import graphics.sprite
 import graphics.render
 import graphics.view
 import gameplay.state
-
+import ctypes
+import math
 
 class Entity:
     def __init__(self, collider: physics.PhysObject, sprite=None):
@@ -83,9 +84,20 @@ class Player(Entity):
             return GameEvent(game_event_dict)
 
         if (event.type == sdl2.SDL_MOUSEBUTTONDOWN):
+            mouseX, mouseY = ctypes.c_int(0), ctypes.c_int(0) # Create two ctypes values
+            # Pass x and y as references (pointers) to SDL_GetMouseState()
+            buttonstate = sdl2.mouse.SDL_GetMouseState(ctypes.byref(mouseX), ctypes.byref(mouseY))
+            x = mouseX.value - graphics.view.game_view.x
+            y = mouseY.value - graphics.view.game_view.y
             game_event_dict["code"] = "SHOOT"
-            game_event_dict["direction_x"] = 1
-            game_event_dict["direction_y"] = 0
+            direction_x = x - self.collider.pos.x
+            direction_y = y - self.collider.pos.y
+            length = math.sqrt(direction_x**2 + direction_y**2)
+            direction_x = direction_x/length
+            direction_y = direction_y/length
+            game_event_dict["direction_x"] = direction_x
+            game_event_dict["direction_y"] = direction_y
+            print(game_event_dict)
             return GameEvent(game_event_dict)
 
         game_event_dict["code"] = "NONE"
@@ -109,10 +121,10 @@ class Player(Entity):
             self.shoot(event.params["direction_x"],event.params["direction_y"])
 
 
-    def shoot(self, direction):
-        # each bullet is identified by playerid_bulletnumber
-        # this ensures that bullet ids are globally unique
-        bullet = Bullet(self.id + "_" + self.next_bullet_id, x, y, direction, self.id)
+    def shoot(self, direction_x, direction_y):
+        #each bullet is identified by playerid_bulletnumber
+        #this ensures that bullet ids are globally unique
+        bullet = Bullet(str(self.id) + "_" + str(self.next_bullet_id), self.collider.pos.x, self.collider.pos.y, direction_x, direction_y, self.id)
         self.next_bullet_id += 1
         print("x: %d, y: %d" % (self.roomX, self.roomY))
 
@@ -127,17 +139,15 @@ class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
         print("shooting")
         self.id = bullet_id
-        self.speed = 20
+        self.speed = 80
         #the player that fired this bullet
         self.player_id = player_id
-        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x+direction_x*5, y+direction_y*5, 5, 5), collision_type=physics.collision_types.dynamic)
+        self.collider = physics.PhysObject(Vec2(x+direction_x*5, y+direction_y*5), Polygon.square(x+direction_x*5, y+direction_y*5, 5, 5), collision_type=physics.collision_types.player)
         roomx = gameplay.state.players[player_id].roomX
         roomy = gameplay.state.players[player_id].roomY
         room = gameplay.state.floor.board[roomx][roomy]
-        print("bullet room x: %d, y: %d" % (roomx, roomy))
         room.simulation.add_object(self.collider)
         room.projectiles.append(self)
-        print(room.projectiles)
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()
