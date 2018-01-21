@@ -1,5 +1,5 @@
 from gameplay.map import getBoard
-from gameplay.entity import Entity #for ladder
+from gameplay.entity import Ladder
 import random
 from gameplay.events import GameEvent
 from gameplay.room import Room

@@ -101,14 +101,14 @@ class Door(Entity):
         return Door(dict["dir"], dict["to_x"], dict["to_y"], dict["from_x"], dict["from_y"])
 
 class Ladder(Entity):
-    def _init__(self):
+    def __init__(self):
         self.collider = None #set this
         #dont forget callback
         self.width = 64
         self.height = 64
         self.speed = 0
-
-
+    def getSprite(self):
+        return None
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
@@ -221,13 +221,13 @@ class Player(Entity):
             gameplay.state.players[gameplay.state.my_player_id].roomY = obj1.toY
             gameplay.state.floor.board[obj1.fromX][obj1.fromY].simulation.remove_object(self.collider)
             gameplay.state.floor.board[obj1.toX][obj1.toY].simulation.add_object(self.collider)
-            self.collider.pos = Vec2()
+            self.collider.pos = Vec2(500,300)
         elif isinstance(obj2, Door):
             gameplay.state.players[gameplay.state.my_player_id].roomX = obj2.toX
             gameplay.state.players[gameplay.state.my_player_id].roomY = obj2.toY
             gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
             gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
-
+            self.collider.pos = Vec2(500,300)
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y):
