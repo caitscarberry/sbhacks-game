@@ -77,10 +77,14 @@ class Player(Entity):
 
             vel = Vec2()
 
-            vel.x = self.speed * (state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT])
-            vel.y = self.speed * (state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP])
+            vel.x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
+            vel.y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
+            print(vel)
             if (vel.length() > 0):
                 vel = vel / vel.length()
+            print(vel)
+
+            vel = vel * self.speed
 
             game_event_dict["code"] = "CHANGE_VELOCITY"
             game_event_dict["velocity"] = vel.to_dict()
@@ -113,6 +117,8 @@ class Player(Entity):
         self.collider.pos.from_dict(event.params["pos"])
 
         if event.params["code"] == "CHANGE_VELOCITY":
+            print("new velocity:")
+            print(self.collider.vel)
             self.collider.vel.from_dict(event.params["velocity"])
 
         elif (event.params["code"] == "SHOOT"):
