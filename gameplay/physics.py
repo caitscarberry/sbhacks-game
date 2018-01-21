@@ -178,7 +178,7 @@ class PhysObject:
     def __init__(self, pos, collision: Polygon, owner, vel: Vec2=None, collision_type=collision_types.static, callbacks: Sequence[callable]=None):
         self.vel = vel or Vec2()
         
-        if callable(callbacks)
+        if callable(callbacks):
             self.callbacks = [callbacks]
         elif callbacks is None:
             self.callbacks = []
