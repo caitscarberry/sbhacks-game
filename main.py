@@ -47,7 +47,7 @@ def main():
     gameplay.state.floor.genFloor(10, 25)
     gameplay.state.players = []
     for i in range(num_players):
-        new_player = Player(i, 50 * i, 50)
+        new_player = Player(i, 200 + 200 * i, 350)
         gameplay.state.players.append(new_player)
         new_player.roomX = gameplay.state.floor.startingLocs[i][0]
         new_player.roomY = gameplay.state.floor.startingLocs[i][1]

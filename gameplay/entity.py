@@ -44,7 +44,7 @@ class Player(Entity):
                                            self, collision_type=physics.collision_types.player)
         self.width = 66
         self.height = 93
-        self.speed = 100
+        self.speed = 200
         self.id = player_id
         self.next_bullet_id = 0
         self.sprite = None
@@ -136,7 +136,7 @@ class Player(Entity):
         #this ensures that bullet ids are globally unique
         bullet = Bullet(str(self.id) + "_" + str(self.next_bullet_id), self.collider.pos.x, self.collider.pos.y, direction_x, direction_y, self.id)
         self.next_bullet_id += 1
-        print("x: %d, y: %d" % (self.roomX, self.roomY))
+        #print("x: %d, y: %d" % (self.roomX, self.roomY))
 
     def getSprite(self):
         if (self.sprite == None):
