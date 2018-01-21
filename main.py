@@ -140,6 +140,7 @@ def main():
 
         gameplay.state.global_queue = Queue()
         gameplay.state.floor.board[my_player.roomX][my_player.roomY].simulation.step(delta / 1000)
+        gameplay.state.floor.board[my_player.roomX][my_player.roomY].cleanup()
         while not gameplay.state.global_queue.empty():
             update_dict = gameplay.state.global_queue.get()
             messaging.broadcast(update_dict.serialize().encode("utf-8"))
