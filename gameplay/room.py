@@ -16,7 +16,7 @@ class Room:
         self.maxDifficulty = 17
         self.maxEnemies = 5
         self.enemies = []
-        self.projectiles = []
+        self.projectiles = {}
         self.collidable = []
         self.background = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
         self.background.rect.x
