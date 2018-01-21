@@ -1,5 +1,6 @@
 from gameplay.room import Room
 from queue import Queue
+import gameplay.state
 import random
 
 
@@ -11,6 +12,7 @@ def getBoard(boardSize, numEmptySquares):
         roomLocs = genLocBoard(boardSize, numEmptySquares)
         boardWorks = checkConnectedBoard(roomLocs)
     genBoard(board, roomLocs, boardSize)
+    addDoors(board)
     return board
 
 # generates a 2D integer array which contains bool values for whether
@@ -76,3 +78,27 @@ def genBoard (board, roomLocs, boardSize):
                 board[x][y] = Room()
             else:
                 board[x][y] = None
+
+def addDoors (board):
+    for roomX in range(len(board)):
+        for roomY in range(len(board)):
+            upY = roomY - 1
+            if upY < 0:
+                upY = len(board) - 1
+            downY = roomY + 1
+            if downY == len(board):
+                downY = 0
+            rightX = roomX + 1
+            if rightX == len(board):
+                rightX = 0
+            leftX = roomX - 1
+            if leftX < 0:
+                leftX = len(board) - 1
+            if (board[leftX][roomY]):
+                board[roomX][roomY].collidable.append(gameplay.state.doorL)
+            if (board[rightX][roomY]):
+                board[roomX][roomY].collidable.append(gameplay.state.doorR)
+            if (board[roomX][upY]):
+                board[roomX][roomY].collidable.append(gameplay.state.doorT)
+            if (board[roomX][downY]):
+                board[roomX][roomY].collidable.append(gameplay.state.doorB)

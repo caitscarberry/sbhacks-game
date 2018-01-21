@@ -93,6 +93,7 @@ class Room:
     def getSprites(self):
         sprites = [graphics.view.SpriteToRender(self.background, 0, 0)]
         sprites = sprites + [x.getSprite() for x in self.projectiles]
+        sprites = sprites + [x.getSprite() for x in self.collidable]
         return sprites
         
 

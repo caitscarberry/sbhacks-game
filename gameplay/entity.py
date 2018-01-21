@@ -37,6 +37,45 @@ class Entity:
     def render(self, renderer):
         pass
 
+class Door(Entity):
+    def __init__(self, dir):
+        leftX = graphics.view.SIDEBAR_WIDTH + 32
+        midX = graphics.view.SIDEBAR_WIDTH + (graphics.view.GAME_WIDTH / 2)
+        rightX = graphics.view.WINDOW_SIZE[0] - 32
+        topY = 32
+        midY = graphics.view.WINDOW_SIZE[1] / 2
+        botY = graphics.view.WINDOW_SIZE[1] - 32
+        if dir == 0:
+            self.collider = physics.PhysObject(Vec2(midX, topY),
+                                               Polygon.square(midX, topY, 64, 64), self,
+                                               collision_type=physics.collision_types.trigger)
+        elif dir == 1:
+            self.collider = physics.PhysObject(Vec2(rightX, midY),
+                                               Polygon.square(rightX, midY, 64, 64), self,
+                                               collision_type=physics.collision_types.trigger)
+        elif dir == 2:
+            self.collider = physics.PhysObject(Vec2(midX, botY),
+                                               Polygon.square(midX, botY, 64, 64), self,
+                                               collision_type=physics.collision_types.trigger)
+        elif dir == 3:
+            self.collider = physics.PhysObject(Vec2(leftX, midY),
+                                               Polygon.square(leftX, midY, 64, 64), self,
+                                               collision_type=physics.collision_types.trigger)
+        self.speed = 0
+        self.width = 64
+        self.height = 64
+        self.sprite = None
+        self.loadSprite(dir)
+
+    def loadSprite(self, dir):
+        if dir == 0:
+            self.sprite = gameplay.state.doorT
+        elif dir == 1:
+            self.sprite = gameplay.state.doorR
+        elif dir == 2:
+            self.sprite = gameplay.state.doorB
+        elif dir == 3:
+            self.sprite = gameplay.state.doorL
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
@@ -144,6 +183,7 @@ class Player(Entity):
         return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x),
                                             int(self.collider.pos.y))
 
+    def onDoor(self, obj1, obj2):
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
