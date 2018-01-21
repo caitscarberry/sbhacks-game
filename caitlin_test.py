@@ -8,10 +8,12 @@ import graphics.sprite
 import graphics.render
 import sys
 import socket
+
 from graphics.rect import Rect
 from gameplay.entity import Player
 from gameplay.events import GameEvent
 from gameplay.controls import ControlsState
+from gameplay import physics
 from networking.messaging_handler import MessagingHandler
 import graphics.view
 import gameplay.state
@@ -80,12 +82,6 @@ def main():
                 gameplay.state.players[event.params["player_id"]].processPlayerEvent(event)
         for player in gameplay.state.players:
             player.update()
-
-        """graphics.view.raw_renderer.clear(col)
-        for player in players:
-            player.render(graphics.view.sprite_renderer)
-        graphics.view.raw_renderer.present()
-        graphics.view.window.refresh()"""
         graphics.view.render()
         sdl2.SDL_Delay(16)
 

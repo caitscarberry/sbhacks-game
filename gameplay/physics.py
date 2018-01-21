@@ -9,9 +9,9 @@ class Vec2:
         self.x = x
         self.y = y
 
-
+    
     def length(self):
-        return sqrt(self.x * self.x + self.y + self.y)
+        return sqrt(self.x * self.x + self.y * self.y)
 
     def squarelength(self):
         return self.x * self.x + self.y * self.y
@@ -26,7 +26,7 @@ class Vec2:
     def dot(self, other):
         return self.x * other.x + self.y * other.y
     
-    def __str__(self):
+    def __repr__(self):
         return "({}, {})".format(self.x, self.y)
     
     def __add__(self, other):
@@ -35,6 +35,7 @@ class Vec2:
     def __iadd__(self, other):
         self.x += other.x
         self.y += other.y
+        return self
         
     def __sub__(self, other):
         return Vec2(self.x - other.x, self.y - other.y)
@@ -42,6 +43,7 @@ class Vec2:
     def __isub__(self, other):
         self.x -= other.x
         self.y -= other.y
+        return self
         
     def __mul__(self, scalar):
         return Vec2(self.x * scalar, self.y * scalar)
@@ -49,6 +51,7 @@ class Vec2:
     def __imul__(self, scalar):
         self.x *= scalar
         self.y *= scalar
+        return self
         
     def __truediv__(self, scalar):
         return Vec2(self.x / scalar, self.y / scalar)
@@ -56,6 +59,7 @@ class Vec2:
     def __itruediv__(self, scalar):
         self.x /= scalar
         self.y /= scalar
+        return self
         
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -65,6 +69,13 @@ class Vec2:
 
     def __neg__(self):
         return Vec2(-self.x, -self.y)
+
+    def to_dict(self):
+        return {"x": self.x, "y": self.y}
+
+    def from_dict(self, dictionary):
+        self.x = dictionary["x"]
+        self.y = dictionary["y"]
 
     
 class AABB:
@@ -93,7 +104,6 @@ class AABB:
         return AABB(x1, y1, x2 - x1, y2 - y1)
     
 
-
 class LineSegment:
     __slots__ = ["start", "stop"]
     
@@ -101,7 +111,7 @@ class LineSegment:
         self.start = min(start, stop)
         self.stop = max(start, stop)
 
-    def overlap(self, other: LineSegment) -> float:
+    def overlap(self, other) -> float:
         return max(0.0, min(self.stop, other.stop) - max(self.start, other.start))
 
     def __repr__(self):
@@ -137,8 +147,8 @@ class Polygon:
         return LineSegment(low, high)
         
     
-    @classmethod
-    def square(self, x, y, w, h):
+    @staticmethod
+    def square(x, y, w, h):
         axes = [Vec2(x, y), Vec2(x + w, y), Vec2(x + w, y + h), Vec2(x, y + h)]
         return Polygon(axes)
         
@@ -150,6 +160,7 @@ class PhysObject:
     def __init__(self, pos, collision: Polygon, vel: Vec2=None, callback: callable=None):
         self.pos = pos
         self.vel = vel or Vec2()
+        print(self.vel)
         self.callback = callback
         self.collision = collision
         self.aabb = collision.get_aabb()
@@ -159,33 +170,43 @@ class PhysObject:
 class Simulation:
     def __init__(self):
         self.objects = set()
+        
 
-
-    def detect_collisions(self):
-        pass
-                
+    def step(self, dt):
+        for obj in self.objects:
+            distance = obj.vel * dt
+            print(distance)
+            self.move_object(obj, distance)
+        
+    def add_object(self, obj):
+        self.objects.add(obj)
+        
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
         collisions = []
         # Get all possible collisions
+
         for other in self.objects:
             if other is obj:
                 continue
 
             if extended_box.intersects(other.aabb):
                 collisions.append((other, other.pos - obj.pos))
-        collisions.sort(key=lambda x: x[1].squaredistance())
-
+        collisions.sort(key=lambda x: x[1].squarelength())
+        
         # Do SAT until we get any collisions
         obj.pos += distance
         for key, dist in collisions:
-            minvec = self.sat(obj, key)
+            minvec = self.sat(obj.collision, key.collision)
             if minvec:
+                print(minvec)
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
                 obj.pos -= minvec
+                print("Collides!")
+                return
         
-                
+        #print(obj.pos)
         
 
     def sat(self, first: Polygon, second: Polygon):
@@ -208,6 +229,3 @@ class Simulation:
                 bestaxis = axis
 
         return axis.normalize() * overlap
-
-
-        

@@ -7,6 +7,8 @@ import graphics.sprite
 import graphics.render
 import graphics.rect
 from gameplay.entity import Player
+from gameplay import physics
+
 
 def main():
     window = init_window()
@@ -17,7 +19,7 @@ def main():
     spritefac = graphics.sprite.SpriteFactory(render)
     playersprite = spritefac.from_file("./assets/players.png").subsprite(graphics.rect.Rect(0, 0, 100, 100))
     player = Player(0, 0, 0)
-    
+    sim = physics.Simulation()
     while running == True:
         events = sdl2.ext.get_events()
         render.clear(col)
