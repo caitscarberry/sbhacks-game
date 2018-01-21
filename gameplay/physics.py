@@ -173,14 +173,20 @@ class Polygon:
     def __str__(self):
         return ", ".join([str(point) for point in self.verts])
 
-collision_types = Enum("collision_type", ["static", "dynamic"])
+collision_types = Enum("collision_type", ["static", "dynamic", "player", "trigger"])
 class PhysObject:
-    def __init__(self, pos, collision: Polygon, vel: Vec2=None, collision_type=collision_types.static, callback: callable=None):
+    def __init__(self, pos, collision: Polygon, owner, vel: Vec2=None, collision_type=collision_types.static, callbacks: Sequence[callable]=None):
         self.vel = vel or Vec2()
-        self.callback = callback
+        
+        if isinstance(callbacks, callable):
+            self.callbacks = [callbacks]
+        elif callbacks is None:
+            self.callbacks = []
+        else:
+            self.callbacks = callbacks
         self.collision = collision
         self.collision_type = collision_type
-        
+        self.owner
 
     @property
     def aabb(self):
@@ -194,6 +200,9 @@ class PhysObject:
     def pos(self, value):
         self.collision.pos = value
 
+    def add_callback(self, callback):
+        self.callbacks.append(callback)
+
 class Simulation:
     def __init__(self):
         self.objects = set()
@@ -204,15 +213,14 @@ class Simulation:
             distance = obj.vel * dt
             #print(distance)
             #print(obj.pos)
-            #if obj.collision_type == collision_types.dynamic:
-            self.move_object(obj, distance)
+            if obj.collision_type != collision_types.static:
+                self.move_object(obj, distance)
         
     def add_object(self, obj):
         self.objects.add(obj)
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
-        # print("Extended aabb", extended_box)
         collisions = []
         # Get all possible collisions
 
@@ -226,19 +234,21 @@ class Simulation:
                 collisions.append((other, other.pos - obj.pos))
                 
         collisions.sort(key=lambda x: x[1].squarelength())
-        print(collisions)
-        print(distance)
         # Do SAT until we get any collisions
 
         obj.collision.move(distance)
         for key, dist in collisions:
             minvec = self.sat(obj.collision, key.collision, distance)
             if minvec:
-                print("MTV is: ", minvec)
-                
+                if obj.callback:
+                    for cb in obj.callback(obj, key)
+                if key.callback:
+                    key.callback(obj, key)
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
-                obj.collision.move(-minvec)
+                if key.collision_type != collision_types.trigger or \
+                   not obj.collision_type == key.collision_type == collision_types.player:
+                    obj.collision.move(-minvec)
                 #sys.exit(0)
                 return
         
