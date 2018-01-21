@@ -165,9 +165,31 @@ class Player(Entity):
         if obj1.id != gameplay.state.my_player_id:
             return
         gameplay.state.players[gameplay.state.my_player_id].setRoom(obj2.toX, obj2.toY)
-        # gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)
-        # gameplay.state.floor.board[obj2.toX][obj2.toY].simulation.add_object(self.collider)
         self.collider.pos = Vec2(500,300)
+
+
+        leftX = 64 + self.width/2
+        midX = graphics.view.GAME_WIDTH / 2
+        rightX = graphics.view.GAME_WIDTH - 64 - self.width/2
+        topY = 64 + self.height/2
+        midY = graphics.view.WINDOW_SIZE[1] / 2
+        botY = graphics.view.WINDOW_SIZE[1] - 64 - self.height/2
+
+        newXLoc = 300
+        newYLoc = 300
+        if obj2.dir == 0:
+            newXLoc = midX
+            newYLoc = botY
+        elif obj2.dir == 1:
+            newXLoc = leftX
+            newYLoc = midY
+        elif obj2.dir == 2:
+            newXLoc = midX
+            newYLoc = topY
+        elif obj2.dir == 3:
+            newXLoc = rightX
+            newYLoc = midY
+        self.collider.pos = Vec2(newXLoc, newYLoc)
 
         for collider in gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.objects:
             if isinstance(collider.owner, Player):
@@ -185,4 +207,5 @@ class Player(Entity):
 
         event = GameEvent(game_event_dict)
         gameplay.state.global_queue.put(event)
+
 
