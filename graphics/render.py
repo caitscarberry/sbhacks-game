@@ -8,15 +8,21 @@ class SpriteRenderer:
     def __init__(self, target: sdl2.ext.Renderer, **kwargs):
         self.target = target
 
-    def draw_sprite(self, sprite: Sprite, x, y):
+    def draw_sprite(self, sprite: Sprite, x, y, width=None, height=None):
         rcopy = sdl2.SDL_RenderCopy
         texture = sprite.texture
         dstrect = sdl2.SDL_Rect()
+
         dstrect.x = int(x - sprite.rect.width / 2)
         dstrect.y = int(y - sprite.rect.height / 2)
-        dstrect.w = sprite.rect.width
-        dstrect.h = sprite.rect.height
-        
+
+        if width is not None and height is not None:
+            dstrect.w = width
+            dstrect.h = height
+        else:
+            dstrect.w = sprite.rect.width
+            dstrect.h = sprite.rect.height
+
         sdlrender = self.target.sdlrenderer
         
         #TODO: Remove

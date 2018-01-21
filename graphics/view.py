@@ -4,11 +4,19 @@ import ctypes
 from graphics.render import SpriteRenderer
 from graphics.sprite import SpriteFactory
 import gameplay.state
-from graphics.sprite_to_render import SpriteToRender
 
 WINDOW_SIZE = [1000, 650]
 SIDEBAR_WIDTH = 188
 GAME_WIDTH = 1000 - SIDEBAR_WIDTH
+
+class SpriteToRender:
+    def __init__(self, img, x, y, width=None, height=None):
+        self.img = img
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
 
 def initWindow():
     sdl2.ext.init()
@@ -49,8 +57,8 @@ class SubView:
         self.height = height
         self.width = width
 
-    def renderSprite(self,sprite, x, y):
-        sprite_renderer.draw_sprite(sprite, x + self.x, y + self.y)
+    def renderSprite(self,sprite, x, y, width=None, height=None):
+        sprite_renderer.draw_sprite(sprite, x + self.x, y + self.y, width, height)
 
     """def renderSpriteCentered(sprite, x, y):
         sprite_renderer.draw_sprite(sprite, x + self.x, y + self.y)"""
@@ -66,14 +74,14 @@ class GameView(SubView):
         if (sprites is None):
             return
         for sprite in sprites:
-            self.renderSprite(sprite.img, sprite.x, sprite.y)
+            self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
         for player in gameplay.state.players:
             sprite = player.getSprite()
-            self.renderSprite(sprite.img, sprite.x, sprite.y)
+            self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
         # TODO: change to only render in current room
         if gameplay.state.floor.board[0][0] is not None:
             for enemy in gameplay.state.floor.board[0][0].enemies:
                 if not isinstance(enemy, int):
                     sprite = enemy.getSprite()
-                    self.renderSprite(sprite.img, sprite.x, sprite.y)
+                    self.renderSprite(sprite.img, sprite.x, sprite.y, sprite.width, sprite.height)
         sprite_renderer.draw_collision_boxes(gameplay.state.floor.board[roomX][roomY].simulation)
