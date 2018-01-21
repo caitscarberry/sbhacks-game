@@ -38,7 +38,7 @@ class Entity:
 
 class Player(Entity):
     def __init__(self, player_id, x, y):
-        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93))
+        self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93), collision_type=physics.collision_types.dynamic)
         self.width = 66
         self.height = 93
         self.speed = 100
@@ -47,9 +47,6 @@ class Player(Entity):
         self.sprite = None
         self.roomX = -1
         self.roomY = -1
-        self.x = x
-        self.y = y
-
         self.load_sprite()
 
     def setRoom(self, x, y):
@@ -110,8 +107,7 @@ class Player(Entity):
     def getSprite(self):
         if (self.sprite == None):
             return
-
-        return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.x), int(self.y))
+        return graphics.view.SpriteToRender(self.sprites[self.directionFromVelocity()], int(self.collider.pos.x), int(self.collider.pos.y))
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction, player_id):

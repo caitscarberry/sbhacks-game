@@ -160,15 +160,15 @@ class Polygon:
         
     def __str__(self):
         return ", ".join([str(point) for point in self.verts])
-    
+
+collision_types = Enum("collision_type", ["static", "dynamic"])
 class PhysObject:
-    collision_types = Enum("collision_type", ["static", "dynamic"])
-    def __init__(self, pos, collision: Polygon, vel: Vec2=None, callback: callable=None):
+    def __init__(self, pos, collision: Polygon, vel: Vec2=None, collision_type=collision_types.static, callback: callable=None):
         self.pos = pos
         self.vel = vel or Vec2()
         self.callback = callback
         self.collision = collision
-        self.collision_type = PhysObject.collision_types.static
+        self.collision_type = collision_type
         
 
     @property
@@ -185,7 +185,8 @@ class Simulation:
         for obj in self.objects:
             distance = obj.vel * dt
             print(distance)
-            if obj.collision_type == PhysObject.collision_types.dynamic:
+            print(obj.pos)
+            if obj.collision_type == collision_types.dynamic:
                 self.move_object(obj, distance)
         
     def add_object(self, obj):

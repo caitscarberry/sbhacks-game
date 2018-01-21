@@ -46,11 +46,12 @@ def main():
     gameplay.state.floor = Floor()
     gameplay.state.floor.genFloor(10, 25)
     gameplay.state.players = []
+    sim = Simulation()
     for i in range(num_players):
         gameplay.state.players.append(Player(i, 50 * i, 50))
-
-    sim = Simulation()
-
+        sim.add_object(gameplay.state.players[i].collider)
+    
+    
     last_phys_time = sdl2.SDL_GetTicks()
     while running == True:
         frame_start = sdl2.SDL_GetTicks()
