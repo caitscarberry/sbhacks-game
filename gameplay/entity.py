@@ -157,7 +157,9 @@ class Bullet(Entity):
         roomy = gameplay.state.players[player_id].roomY
         room = gameplay.state.floor.board[roomx][roomy]
         room.simulation.add_object(self.collider)
-        room.projectiles.append(self)
+        room.projectiles[self.id] = self
+        if player_id == gameplay.state.my_player_id:
+            gameplay.state.responsible_for.append(self.id)
         self.collider.vel.x = direction_x * self.speed
         self.collider.vel.y = direction_y * self.speed
         self.load_sprite()
