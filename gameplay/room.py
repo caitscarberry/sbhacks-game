@@ -72,6 +72,9 @@ class Room:
         self.enemies = []
         self.projectiles = []
 
+        for o in self.simulation.objects:
+            if isinstance(o.owner, Monster) or isinstance(o.owner, Bullet):
+                self.simulation.remove_object(o)
         for i in dict["enemies"]:
             monster = Monster.from_dict(i)
             self.enemies.append(monster)

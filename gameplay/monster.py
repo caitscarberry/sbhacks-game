@@ -13,8 +13,8 @@ import graphics.view
 class Monster(Entity):
     def __init__(self, monster_id, x, y):
         self.id = monster_id
-        self.width = 66
-        self.height = 50
+        self.width = 33
+        self.height = 25
         self.speed = 50
         self.next_bullet_id = 0
         self.sprite = None
