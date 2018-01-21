@@ -232,6 +232,8 @@ class Player(Entity):
             obj1 = obj2
             obj2 = foo
 
+        if not isinstance(obj1, Player) or not isinstance(obj2, Door):
+            return
         if obj1.id != gameplay.state.my_player_id:
             return
         gameplay.state.players[gameplay.state.my_player_id].setRoom(obj2.toX, obj2.toY)
