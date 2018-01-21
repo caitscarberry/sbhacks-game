@@ -180,6 +180,7 @@ class Player(Entity):
                                             int(self.collider.pos.y))
 
     def onDoor(self, obj1, obj2):
+        pass
 
 class Bullet(Entity):
     def __init__ (self, bullet_id, x, y, direction_x, direction_y, player_id):
