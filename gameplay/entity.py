@@ -217,12 +217,16 @@ class Player(Entity):
         obj1 = obj1.owner
         obj2 = obj2.owner
         if isinstance(obj1, Door):
+            if obj2.id != gameplay.state.my_player_id
+                return
             gameplay.state.players[gameplay.state.my_player_id].roomX = obj1.toX
             gameplay.state.players[gameplay.state.my_player_id].roomY = obj1.toY
             gameplay.state.floor.board[obj1.fromX][obj1.fromY].simulation.remove_object(self.collider)
             gameplay.state.floor.board[obj1.toX][obj1.toY].simulation.add_object(self.collider)
             self.collider.pos = Vec2(500,300)
         elif isinstance(obj2, Door):
+            if obj1.id != gameplay.state.my_player_id
+                return
             gameplay.state.players[gameplay.state.my_player_id].roomX = obj2.toX
             gameplay.state.players[gameplay.state.my_player_id].roomY = obj2.toY
             gameplay.state.floor.board[obj2.fromX][obj2.fromY].simulation.remove_object(self.collider)

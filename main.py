@@ -64,8 +64,7 @@ def main():
         new_player.roomX = gameplay.state.floor.startingLocs[i][0]
         new_player.roomY = gameplay.state.floor.startingLocs[i][1]
         print("Starting room: %d %d" % (new_player.roomX, new_player.roomY))
-        if i == gameplay.state.my_player_id:
-            gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
+        gameplay.state.floor.board[new_player.roomX][new_player.roomY].simulation.add_object(new_player.collider)
     
     graphics.view.makeGameSubView()
 
