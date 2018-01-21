@@ -20,6 +20,8 @@ class Vec2:
         return Vec2(-self.y, self.x)
 
     def normalize(self):
+        if self.x == 0.0 and self.y == 0.0:
+            return Vec2()
         dist = self.length()
         return Vec2(self.x / dist, self.y / dist)
     
@@ -159,6 +161,14 @@ class Polygon:
     def square(x, y, w, h):
         axes = [Vec2(x, y), Vec2(x + w, y), Vec2(x + w, y + h), Vec2(x, y + h)]
         return Polygon(axes)
+
+    @property
+    def pos(self):
+        return sum(self.verts, Vec2()) / len(self.verts)
+
+    @pos.setter
+    def pos(self, value):
+        self.move(value - self.pos)
         
     def __str__(self):
         return ", ".join([str(point) for point in self.verts])
@@ -166,7 +176,6 @@ class Polygon:
 collision_types = Enum("collision_type", ["static", "dynamic"])
 class PhysObject:
     def __init__(self, pos, collision: Polygon, vel: Vec2=None, collision_type=collision_types.static, callback: callable=None):
-        self.pos = pos
         self.vel = vel or Vec2()
         self.callback = callback
         self.collision = collision
@@ -177,6 +186,13 @@ class PhysObject:
     def aabb(self):
         return self.collision.get_aabb()
 
+    @property
+    def pos(self):
+        return self.collision.pos
+
+    @pos.setter
+    def pos(self, value):
+        self.collision.pos = value
 
 class Simulation:
     def __init__(self):
@@ -188,15 +204,15 @@ class Simulation:
             distance = obj.vel * dt
             #print(distance)
             #print(obj.pos)
-            if obj.collision_type == collision_types.dynamic:
-                self.move_object(obj, distance)
+            #if obj.collision_type == collision_types.dynamic:
+            self.move_object(obj, distance)
         
     def add_object(self, obj):
         self.objects.add(obj)
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
-        print("Extended aabb", extended_box)
+        # print("Extended aabb", extended_box)
         collisions = []
         # Get all possible collisions
 
@@ -213,30 +229,29 @@ class Simulation:
         print(collisions)
         print(distance)
         # Do SAT until we get any collisions
-        obj.pos += distance
+
         obj.collision.move(distance)
         for key, dist in collisions:
-            minvec = self.sat(obj.collision, key.collision)
+            minvec = self.sat(obj.collision, key.collision, distance)
             if minvec:
-                print(minvec)
+                print("MTV is: ", minvec)
                 
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
-                obj.pos -= minvec
                 obj.collision.move(-minvec)
-                print("Collides!")
                 #sys.exit(0)
                 return
         
         #print(obj.pos)
         
 
-    def sat(self, first: Polygon, second: Polygon):
+    def sat(self, first: Polygon, second: Polygon, movement: Vec2):
         axes = []
         for i in range(len(first.verts)):
             axes.append((first.verts[(i + 1) % len(first.verts)] - first.verts[i]).perpendicular().normalize())
         for i in range(len(second.verts)):
             axes.append((second.verts[(i + 1) % len(second.verts)] - second.verts[i]).perpendicular().normalize())
+        axes.append(movement.normalize())
         #print(first.verts)
         #print(second.verts)
         #print(axes)

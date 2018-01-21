@@ -30,5 +30,5 @@ class SpriteRenderer:
     def draw_collision_boxes(self, sim):
         for obj in sim.objects:
             aabb = obj.aabb
-            print(aabb)
+            
             self.draw_rect(aabb.left, aabb.top, aabb.right - aabb.left, aabb.bottom - aabb.top)
