@@ -41,7 +41,7 @@ class Player(Entity):
         self.collider = physics.PhysObject(Vec2(x, y), Polygon.square(x, y, 66, 93))
         self.width = 66
         self.height = 93
-        self.speed = 1
+        self.speed = 100
         self.id = player_id
         self.next_bullet_id = 0
         self.sprite = None
@@ -74,8 +74,8 @@ class Player(Entity):
         if event.type == sdl2.SDL_KEYDOWN or event.type == sdl2.SDL_KEYUP:
             state = ControlsState.state
             
-            self.collider.vel.x = state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT]
-            self.collider.vel.y = state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP]
+            self.collider.vel.x = self.speed * (state[sdl2.SDLK_RIGHT] - state[sdl2.SDLK_LEFT])
+            self.collider.vel.y = self.speed * (state[sdl2.SDLK_DOWN] - state[sdl2.SDLK_UP])
 
             game_event_dict["code"] = "CHANGE_VELOCITY"
             game_event_dict["velocity"] = self.collider.vel.to_dict()

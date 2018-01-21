@@ -2,7 +2,7 @@ from math import sqrt
 import math
 from enum import Enum
 from typing import Sequence
-
+import sys
 class Vec2:
     __slots__ = ["x", "y"]
     def __init__(self, x=0, y=0):
@@ -185,21 +185,25 @@ class Simulation:
         for obj in self.objects:
             distance = obj.vel * dt
             print(distance)
-            self.move_object(obj, distance)
+            if obj.collision_type == PhysObject.collision_types.dynamic:
+                self.move_object(obj, distance)
         
     def add_object(self, obj):
         self.objects.add(obj)
         
     def move_object(self, obj: PhysObject, distance: Vec2):
         extended_box = obj.aabb.extend(distance)
+        print(extended_box)
         collisions = []
         # Get all possible collisions
 
         for other in self.objects:
+            # Don't collide with yourself
             if other is obj:
                 continue
 
             if extended_box.intersects(other.aabb):
+                print("Collision?")
                 collisions.append((other, other.pos - obj.pos))
                 
         collisions.sort(key=lambda x: x[1].squarelength())
@@ -212,11 +216,13 @@ class Simulation:
             minvec = self.sat(obj.collision, key.collision)
             if minvec:
                 print(minvec)
+                
                 # The distance the object can move is as much of its movement as possible,
                 # then shift it by the MTGV
                 obj.pos -= minvec
                 obj.collision.move(-minvec)
                 print("Collides!")
+                #sys.exit(0)
                 return
         
         #print(obj.pos)
@@ -225,20 +231,24 @@ class Simulation:
     def sat(self, first: Polygon, second: Polygon):
         axes = []
         for i in range(len(first.verts)):
-            axes.append((first.verts[(i + 1) % len(first.verts)] - first.verts[i]).perpendicular())
+            axes.append((first.verts[(i + 1) % len(first.verts)] - first.verts[i]).perpendicular().normalize())
         for i in range(len(second.verts)):
-            axes.append((second.verts[(i + 1) % len(second.verts)] - second.verts[i]).perpendicular())
-
+            axes.append((second.verts[(i + 1) % len(second.verts)] - second.verts[i]).perpendicular().normalize())
+        #print(first.verts)
+        #print(second.verts)
+        #print(axes)
         bestaxis = None
         overlap = math.inf
         for axis in axes:
             seg1 = first.project(axis)
             seg2 = second.project(axis)
+            #print(seg1, seg2)
             o = seg1.overlap(seg2)
+            #print(o)
             if o == 0.0: # No overlap, no collision
                 return None
             elif o < overlap:
                 overlap = o
                 bestaxis = axis
-
+        print(axis, overlap)
         return axis.normalize() * overlap

@@ -48,14 +48,14 @@ def main():
     for i in range(num_players): 
         players.append(Player(i, 50*i, 50))
 
-    for player in players:
-        player.load_sprite(graphics.view.sprite_factory)
-        
+            
     sim = physics.Simulation()
     dg = graphics.view.sprite_factory.from_file("./assets/dungeon.png")
     r = dg.rect
-    wall = physics.PhysObject(physics.Vec2(300, 300), physics.Polygon.square(r.x + 300, r.y + 300, r.width, r.height))
+    wall = physics.PhysObject(physics.Vec2(300, 300), physics.Polygon.square(300, 300, 200, 200))
+    player = players[0]
     sim.add_object(player.collider)
+    player.collider.collision_type = physics.PhysObject.collision_types.dynamic
     sim.add_object(wall)
     while running == True:
         input_events = sdl2.ext.get_events()
@@ -85,9 +85,9 @@ def main():
                 players[event.params["player_id"]].processPlayerEvent(event)
         #for player in players:
         #    player.update()
-        sim.step(16)
+        sim.step(16 / 1000)
         graphics.view.raw_renderer.clear(col)
-        graphics.view.sprite_renderer.draw_sprite(dg, wall.pos.x, wall.pos.y)
+        #graphics.view.sprite_renderer.draw_sprite(dg, wall.pos.x, wall.pos.y)
         for player in players:
             player.render(graphics.view.sprite_renderer)
 
