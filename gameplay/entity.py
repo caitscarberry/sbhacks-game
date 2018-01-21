@@ -135,9 +135,7 @@ class Bullet(Entity):
         return graphics.view.SpriteToRender(self.sprite, int(self.collider.pos.x), int(self.collider.pos.y))
 
     def onCollide(self, collider: physics.PhysObject, other: physics.PhysObject):
-        if collider.collision_type == physics.collision_types.static or \
-           collider.collision_type == physics.collision_types.dynamic or \
-           other.collision_type == physics.collision_types.static or \
+        if other.collision_type == physics.collision_types.static or \
            other.collision_type == physics.collision_types.dynamic:
             self.alive = False
 
